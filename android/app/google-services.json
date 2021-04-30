@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "752560876389",
+    "firebase_url": "https://workmannow-18c9c-default-rtdb.firebaseio.com",
+    "project_id": "workmannow-18c9c",
+    "storage_bucket": "workmannow-18c9c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752560876389:android:9fe41d8d7cd182e4154f8c",
+        "android_client_info": {
+          "package_name": "com.example.workmannow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "752560876389-j3i0pfamlqtsm60a2qtui9qsnmui3715.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgcco_W4jaLDMqKiAt4z2kqJqbaptyMCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "752560876389-j3i0pfamlqtsm60a2qtui9qsnmui3715.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

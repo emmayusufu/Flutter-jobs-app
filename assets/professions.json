@@ -1,0 +1,33 @@
+{
+    "professions":{
+        "software development":[
+            "front_end_development",
+            "backend_development",
+            "mobile_development"
+        ],
+        "doctor":[
+            "oncology",
+            "general doctors",
+            "cardiology",
+            "radiology",
+            "pediatrics",
+            "pathology",
+            "public health",
+            "anasthesia"
+        ],
+        "engineer": [
+            "electrical",
+            "aeronatical",
+            "nuclear",
+            "biomedical",
+            "mechanical",
+            "civil"
+                    ],
+        "lawyer":[
+            "commercial",
+            "industrial",
+            "business"
+        ]
+    }
+    
+}
