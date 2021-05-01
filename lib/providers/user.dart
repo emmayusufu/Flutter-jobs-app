@@ -11,9 +11,7 @@ import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
-  final String url = "192.168.43.77:3001";
-
-  // final String url = "792c2a13b2c4.ngrok.io";
+  final String url = "192.168.0.108:3001";
 
   Future<String> getCurrentUserID() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -22,13 +20,15 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<List> fetchAllWorkMen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userData = jsonDecode(prefs.getString('user'));
+    final userId = userData['_id'];
     List workmen;
     try {
       var response = await http
-          .get(Uri.parse('http://192.168.43.77:3001/api/workmen'));
-          // .get(Uri.parse('http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee&role=workman'));
+          .get(Uri.parse('http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession&role=workman&userId=$userId'));
       if (response.statusCode == 200) {
-        workmen = convert.jsonDecode(response.body)['data'];
+        workmen = convert.jsonDecode(response.body)['users'];
       } else {
         print(response.statusCode);
       }

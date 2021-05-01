@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:workmannow/classes/auth/profile_setup.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/auth.dart';
-import 'package:workmannow/widgets/InputField.dart';
-import 'package:workmannow/widgets/round_button.dart';
+import 'package:workmannow/widgets/input_field.dart';
+import 'package:workmannow/widgets/rounded_button.dart';
 
 class SetUpClientProfile extends StatefulWidget {
   @override
@@ -128,7 +128,7 @@ class _SetUpClientProfileState extends State<SetUpClientProfile> {
                     SizedBox(
                       height: 60.0,
                     ),
-                    RoundButton(
+                    RoundedButton(
                         cb: () {
                           if (_formKey.currentState.validate()) {
                             _submit();
@@ -164,15 +164,15 @@ class _SetUpClientProfileState extends State<SetUpClientProfile> {
         style: TextStyle(fontFamily: 'Quicksand'),
       ),
     );
-    _scaffoldKey.currentState.showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   Future _submit() async {
        EasyLoading.show(
-        status: 'Setting up your profile ...',
+        status: 'Setting up profile',
         maskType: EasyLoadingMaskType.black,
         dismissOnTap: false,
-        indicator: SpinKitCircle(
+        indicator: SpinKitPouringHourglass(
           color: Colors.white,
           size: 50.0,
         ));

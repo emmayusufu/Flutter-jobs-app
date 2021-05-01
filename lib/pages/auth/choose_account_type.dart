@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:workmannow/pages/auth/setup_client_profile.dart';
 import 'package:workmannow/pages/auth/setup_workman_profile.dart';
-import 'package:workmannow/widgets/round_button.dart';
+import 'package:workmannow/widgets/rounded_button.dart';
 
 class ChooseAccountType extends StatefulWidget {
   @override
@@ -23,7 +23,7 @@ class _ChooseAccountTypeState extends State<ChooseAccountType> {
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Text('What are you registering as ?',textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20.0),),
               ),
-              RoundButton(cb: (){
+              RoundedButton(cb: (){
                 Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SetUpClientProfile()));
               }, name: 'Client'),
               Row(
@@ -42,7 +42,7 @@ class _ChooseAccountTypeState extends State<ChooseAccountType> {
                   ),
                 ],
               ),
-              RoundButton(cb: (){
+              RoundedButton(cb: (){
                 Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SetupWorkManProfile()));
               }, name: 'Workman'),
             ],

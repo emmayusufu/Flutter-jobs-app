@@ -25,6 +25,11 @@ class ThemeHelper {
             30.0,
           ),
           borderSide: BorderSide(color: Colors.red, width: 1)),
+      focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            30.0,
+          ),
+          borderSide: BorderSide(color: Colors.red, width: 1)),
     ),
     scaffoldBackgroundColor: Colors.grey[200],
     primarySwatch: MyColors.blue,

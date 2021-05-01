@@ -22,7 +22,6 @@ import 'package:workmannow/providers/user.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
 }
 
 void main() {
@@ -42,7 +41,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<PermissionStatus> requestLocationPermission() async {
     PermissionStatus permission =
-    await LocationPermissions().requestPermissions();
+        await LocationPermissions().requestPermissions();
     return permission;
   }
 
@@ -73,20 +72,15 @@ class _MyAppState extends State<MyApp> {
             title: 'WorkManNow',
             theme: ThemeHelper.theme,
             home: FutureBuilder(
-              // Initialize FlutterFire:
               future: _initialization,
               builder: (context, snapshot) {
-                // Check for errors
                 if (snapshot.hasError) {
                   return Scaffold(
                     body: Center(
-                      child: Text(
-                          'Some thing went wrong while connecting to firebase'),
+                      child: Text('Something went wrong'),
                     ),
                   );
                 }
-
-                // Once complete, show your application
                 if (snapshot.connectionState == ConnectionState.done) {
                   return StreamBuilder(
                       stream: locationEventStream,
@@ -97,19 +91,19 @@ class _MyAppState extends State<MyApp> {
                           ),
                         );
                         if (snapshot.connectionState ==
-                            ConnectionState.active &&
+                                ConnectionState.active &&
                             snapshot.hasData) {
                           if (snapshot.data) {
                             component = authProvider.isAuthenticated
                                 ? Home()
                                 : FutureBuilder(
-                              future: authProvider.tryAutoLogin(),
-                              builder: (context, snapshot) =>
-                              snapshot.connectionState ==
-                                  ConnectionState.waiting
-                                  ? SplashScreen()
-                                  : Login(),
-                            );
+                                    future: authProvider.tryAutoLogin(),
+                                    builder: (context, snapshot) =>
+                                        snapshot.connectionState ==
+                                                ConnectionState.waiting
+                                            ? SplashScreen()
+                                            : Login(),
+                                  );
                           } else if (!snapshot.data) {
                             component = LocationNotificationScreen();
                           }
@@ -117,13 +111,11 @@ class _MyAppState extends State<MyApp> {
                         return component;
                       });
                 }
-
-                // Otherwise, show something whilst waiting for initialization to complete
                 return CircularProgressIndicator();
               },
             ),
             routes: {
-              '/registration':(_)=>Registration(),
+              '/registration': (_) => Registration(),
               '/home': (_) => Home(),
               '/user_profile': (_) => UserProfile(),
               '/notifications': (_) => Notifications(),

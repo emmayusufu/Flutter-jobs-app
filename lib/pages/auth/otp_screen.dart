@@ -8,19 +8,19 @@ import 'package:provider/provider.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/pages/auth/choose_account_type.dart';
 import 'package:workmannow/providers/auth.dart';
-import 'package:workmannow/widgets/round_button.dart';
+import 'package:workmannow/widgets/rounded_button.dart';
 
-class OTP extends StatefulWidget {
-  final String contact;
+class OTPScreen extends StatefulWidget {
+  final String phoneNumber;
 
-  OTP({@required this.contact});
+  OTPScreen({@required this.phoneNumber});
 
   @override
-  _OTPState createState() => _OTPState();
+  _OTPScreenState createState() => _OTPScreenState();
 }
 
-class _OTPState extends State<OTP> {
-  String pin;
+class _OTPScreenState extends State<OTPScreen> {
+  String otp;
   bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -68,7 +68,7 @@ class _OTPState extends State<OTP> {
                             fontSize: 13),
                         children: [
                           TextSpan(
-                              text: "  ${widget.contact}",
+                              text: "  ${widget.phoneNumber}",
                               style: TextStyle(
                                 color: MyColors.blue,
                                 fontWeight: FontWeight.bold,
@@ -90,7 +90,7 @@ class _OTPState extends State<OTP> {
                       keyboardType: TextInputType.phone,
                       onChanged: (value) {
                         setState(() {
-                          pin = value;
+                          otp = value;
                         });
                       },
                       pinLength: 5,
@@ -99,29 +99,11 @@ class _OTPState extends State<OTP> {
                   SizedBox(
                     height: 50.0,
                   ),
-                  // RichText(
-                  //   textAlign: TextAlign.center,
-                  //   text: TextSpan(
-                  //       text: 'Did not receive code',
-                  //       style: TextStyle(
-                  //           color: Colors.black54,
-                  //           fontFamily: 'Quicksand',
-                  //           fontSize: 13),
-                  //       children: [
-                  //         TextSpan(
-                  //             text: "  resend",
-                  //             style: TextStyle(
-                  //               color: MyColors.blue,
-                  //               fontWeight: FontWeight.bold,
-                  //             ))
-                  //       ]),
-                  // ),
-                  // SizedBox(height: 20.0,),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 50.0,
                     ),
-                    child: RoundButton(
+                    child: RoundedButton(
                         cb: () {
                           if (_formKey.currentState.validate()) {
                             _submit(context);
@@ -146,7 +128,7 @@ class _OTPState extends State<OTP> {
         style: TextStyle(fontFamily: 'Quicksand'),
       ),
     );
-    _scaffoldKey.currentState.showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   Future _submit(context) async {
@@ -154,12 +136,12 @@ class _OTPState extends State<OTP> {
         status: 'Verifying OTP ...',
         maskType: EasyLoadingMaskType.black,
         dismissOnTap: false,
-        indicator: SpinKitCircle(
+        indicator: SpinKitPouringHourglass(
           color: Colors.white,
           size: 50.0,
         ));
     Provider.of<AuthProvider>(context, listen: false)
-        .verifyOtp(OTPModal(phoneNumber: widget.contact, otp: pin))
+        .verifyOtp(OTPModal(phoneNumber: widget.phoneNumber, otp: otp))
         .then((String message) async {
       if (message == 'success') {
         if (mounted) {
@@ -172,6 +154,7 @@ class _OTPState extends State<OTP> {
         _showSnackBar('Entered a wrong OTP');
       } else {
         await EasyLoading.dismiss();
+        _showSnackBar('Something went wrong');
       }
     }).catchError((e) async {
       await EasyLoading.dismiss();

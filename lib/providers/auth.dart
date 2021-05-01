@@ -11,8 +11,7 @@ import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final String url = "192.168.43.77:3001";
-
+  final String url = "192.168.0.108:3001";
   var _user;
 
   get user => _user;
@@ -30,10 +29,11 @@ class AuthProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String message;
     try {
-      var response = await http.post(Uri.parse('http://$url/api/user_login'), body: {
-        'phoneNumber': loginDetails.phoneNumber,
-        'password': loginDetails.password
-      });
+      var response = await http.post(Uri.parse('http://$url/api/user_login'),
+          body: {
+            'phoneNumber': loginDetails.phoneNumber,
+            'password': loginDetails.password
+          });
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
         if (res['message'] == 'success') {
@@ -56,7 +56,8 @@ class AuthProvider extends ChangeNotifier {
   Future<String> signup(SignUpModal signUpDetails) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('http://$url/api/user_registration'), body: {
+      var response = await http
+          .post(Uri.parse('http://$url/api/user_registration'), body: {
         "email": signUpDetails.email,
         'phoneNumber': signUpDetails.phoneNumber,
         'password': signUpDetails.password
@@ -80,7 +81,7 @@ class AuthProvider extends ChangeNotifier {
   Future<String> verifyOtp(OTPModal otp) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('http://$url/verify_otp'),
+      var response = await http.post(Uri.parse('http://$url/api/otp_verification'),
           body: {"phoneNumber": otp.phoneNumber, "otp": otp.otp});
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
@@ -107,14 +108,14 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       FormData formData = FormData.fromMap({
-        "id": user['id'],
+        "userId": user['id'],
         "firstName": client.firstName,
         "lastName": client.lastName,
-        "dpImage": await MultipartFile.fromFile(client.dpImage.path,
+        "profileImage": await MultipartFile.fromFile(client.dpImage.path,
             filename: basename(client.dpImage.path)),
       });
       var response = await dio.post(
-        "https://$url/setup_client_profile",
+        "http://$url/api/setup_client_profile",
         data: formData,
         options: Options(contentType: 'application/x-www-form-urlencoded'),
       );
@@ -155,7 +156,7 @@ class AuthProvider extends ChangeNotifier {
         "profession": workman.profession,
         "qualification": workman.qualification,
         "startingFee": workman.startingFee,
-        "dpImage": await MultipartFile.fromFile(workman.dpImage.path,
+        "profileImage": await MultipartFile.fromFile(workman.dpImage.path,
             filename: basename(workman.dpImage.path)),
         "idBack": await MultipartFile.fromFile(workman.idBack.path,
             filename: basename(workman.idBack.path)),
@@ -163,7 +164,7 @@ class AuthProvider extends ChangeNotifier {
             filename: basename(workman.idFront.path)),
       });
       var response = await dio.post(
-        "https://$url/setup_workman_profile",
+        "http://$url/api/setup_workman_profile",
         data: formData,
         options: Options(contentType: 'application/x-www-form-urlencoded'),
       );

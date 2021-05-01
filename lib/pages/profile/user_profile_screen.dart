@@ -30,7 +30,7 @@ class _UserProfileState extends State<UserProfile> {
                     top: BorderSide(color: Colors.grey[300], width: 0.5)),
               ),
             ),
-            preferredSize: null,
+            preferredSize: Size.zero,
           ),
         ),
         body: SingleChildScrollView(
@@ -76,7 +76,7 @@ class _UserProfileState extends State<UserProfile> {
                             SizedBox(
                               height: 5.0,
                             ),
-                            user['workman']
+                            user['role'] == 'workman'
                                 ? Text(
                                     user['profession'],
                                     style: TextStyle(
@@ -84,7 +84,7 @@ class _UserProfileState extends State<UserProfile> {
                                         color: Colors.grey),
                                   )
                                 : SizedBox(),
-                            user['workman']
+                            user['role'] == 'workman'
                                 ? SizedBox(
                                     height: 5.0,
                                   )
@@ -111,7 +111,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 ),
                 // ======================================================================= rating card
-                user['workman']
+                user['role'] == 'workman'
                     ? Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
@@ -157,7 +157,7 @@ class _UserProfileState extends State<UserProfile> {
                       )
                     : SizedBox(),
                 //============================================================================== hire and price card
-                user['workman']
+                user['role']== 'workman'
                     ? Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
@@ -200,7 +200,7 @@ class _UserProfileState extends State<UserProfile> {
                       )
                     : SizedBox(),
                 //============================================================================== about card
-                user['workman']
+                user['role'] == 'workman'
                     ? SizedBox(
                         width: double.infinity,
                         child: Card(
@@ -235,7 +235,7 @@ class _UserProfileState extends State<UserProfile> {
                   height: 10.0,
                 ),
                 //============================================================================== specialities card
-                user['workman']
+                user['role'] == 'workman'
                     ? SizedBox(
                         width: double.infinity,
                         child: Card(
@@ -274,20 +274,20 @@ class _UserProfileState extends State<UserProfile> {
                 //         color: Colors.blueGrey,
                 //         fontWeight: FontWeight.bold,
                 //         fontSize: 15.0)),
-                // Card(
-                //   shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(10.0)),
-                //   child: ListTile(
-                //     shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(10.0)),
-                //     leading: Icon(
-                //       Icons.logout,
-                //       color: Colors.red,
-                //     ),
-                //     title: Text('Logout'),
-                //     onTap: () {},
-                //   ),
-                // )
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    leading: Icon(
+                      Icons.logout,
+                      color: Colors.red,
+                    ),
+                    title: Text('Logout'),
+                    onTap: () {},
+                  ),
+                )
               ],
             ),
           ),

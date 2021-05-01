@@ -12,31 +12,31 @@ class ProfileScreen extends StatelessWidget {
   ProfileScreen({@required this.workMan});
   @override
   Widget build(BuildContext context) {
-    Widget similarWorkmenGridList = new Container(
-        margin: EdgeInsets.symmetric(vertical: 20.0),
-        height: 200.0,
-        child: new ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            UserCard(),
-            UserCard(),
-            UserCard(),
-            UserCard(),
-            UserCard(),
-          ],
-        ));
-
-    Widget finishedJobsGridList = new Container(
-        height: 80.0,
-        child: new ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            JobCard(),
-            JobCard(),
-            JobCard(),
-            JobCard(),
-          ],
-        ));
+    // Widget similarWorkmenGridList = new Container(
+    //     margin: EdgeInsets.symmetric(vertical: 20.0),
+    //     height: 200.0,
+    //     child: new ListView(
+    //       scrollDirection: Axis.horizontal,
+    //       children: <Widget>[
+    //         UserCard(),
+    //         UserCard(),
+    //         UserCard(),
+    //         UserCard(),
+    //         UserCard(),
+    //       ],
+    //     ));
+    //
+    // Widget finishedJobsGridList = new Container(
+    //     height: 80.0,
+    //     child: new ListView(
+    //       scrollDirection: Axis.horizontal,
+    //       children: <Widget>[
+    //         JobCard(),
+    //         JobCard(),
+    //         JobCard(),
+    //         JobCard(),
+    //       ],
+    //     ));
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -54,7 +54,7 @@ class ProfileScreen extends StatelessWidget {
                   Border(top: BorderSide(color: Colors.grey[300], width: 0.5)),
             ),
           ),
-          preferredSize: null,
+          preferredSize: Size.zero,
         ),
       ),
       body: SafeArea(
@@ -81,8 +81,8 @@ class ProfileScreen extends StatelessWidget {
                           child: CircleAvatar(
                               radius: 50.0,
                               backgroundImage: workMan['dpImage'] != null
-                                  ? NetworkImage(
-                                      workMan['dpImage'],
+                                  ? NetworkImage('http://192.168.0.108:3001/'+
+                                      workMan['profileImage']['thumbnail'],
                                     )
                                   : AssetImage('assets/dp.png')),
                         ),
@@ -93,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${workMan['lastName']} ${workMan['firstName']}'
+                              '${workMan['firstName']} ${workMan['lastName']}'
                                   .titleCase,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -220,9 +220,9 @@ class ProfileScreen extends StatelessWidget {
                         SizedBox(
                           height: 5.0,
                         ),
-                        ChipList(
-                          list: [...workMan['specialities']],
-                        ),
+                        // ChipList(
+                        //   list: workMan['specialities'],
+                        // ),
                       ],
                     ),
                   ),
@@ -266,7 +266,7 @@ class ProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 10.0,
                 ),
-                finishedJobsGridList,
+                // finishedJobsGridList,
                 SizedBox(
                   height: 10.0,
                 ),
@@ -275,7 +275,7 @@ class ProfileScreen extends StatelessWidget {
                         color: Colors.blueGrey,
                         fontWeight: FontWeight.bold,
                         fontSize: 15.0)),
-                similarWorkmenGridList,
+                // similarWorkmenGridList,
               ],
             ),
           ),

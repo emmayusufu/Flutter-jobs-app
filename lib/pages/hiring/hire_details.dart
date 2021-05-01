@@ -7,7 +7,7 @@ import 'package:workmannow/pages/map/address_search.dart';
 import 'package:workmannow/providers/auth.dart';
 import 'package:workmannow/providers/location.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/round_button.dart';
+import 'package:workmannow/widgets/rounded_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -380,7 +380,7 @@ class _HireDetailsState extends State<HireDetails> {
                   SizedBox(
                     height: 10.0,
                   ),
-                  RoundButton(
+                  RoundedButton(
                     cb: location == null || location.isEmpty
                         ? null
                         : () {

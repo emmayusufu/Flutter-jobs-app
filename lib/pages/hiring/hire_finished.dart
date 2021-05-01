@@ -1,5 +1,5 @@
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/round_button.dart';
+import 'package:workmannow/widgets/rounded_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +99,7 @@ class _HireFinishedState extends State<HireFinished> {
                     SizedBox(
                       height: 70.0,
                     ),
-                    RoundButton(
+                    RoundedButton(
                       cb: () {
                         if (_formKey.currentState.validate()) {
                           _submit(docRef: widget.docRef);

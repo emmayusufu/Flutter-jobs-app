@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
       var user = authProvider.user;
       return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 120.0,
+          // toolbarHeight: 120.0,
           leading: GestureDetector(
             onTap: () {
               Navigator.pushNamed(context, '/user_profile');
@@ -73,25 +73,25 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(2.0),
               child: CircleAvatar(
                   radius: 70.0,
-                  backgroundImage : AssetImage('assets/dp.png')),
+                  backgroundImage : user['profileImage'] !=null ? NetworkImage('http://192.168.0.108:3001/'+user['profileImage']['thumbnail']) : AssetImage('assets/dp.png')),
             ),
           ),
           title: Text('Home'),
           centerTitle: true,
-          actions: [
-            PendingButton(),
-            user['role'] == "workman" ? NotificationButton() : null,
-          ],
-          bottom: PreferredSize(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(child: SearchContainer()),
-                  ],
-                ),
-              ),
-              preferredSize: Size.fromHeight(50.0)),
+          // actions: [
+          //   PendingButton(),
+          //   user['role'] == "workman" ? NotificationButton() : null,
+          // ],
+          // bottom: PreferredSize(
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Row(
+          //         children: [
+          //           Expanded(child: SearchContainer()),
+          //         ],
+          //       ),
+          //     ),
+          //     preferredSize: Size.fromHeight(50.0)),
         ),
         body: FutureBuilder(
             future: userProvider.fetchAllWorkMen(),
@@ -165,11 +165,12 @@ class _HomeState extends State<Home> {
                               child: WorkManTile(
                                 workMan: workman,
                                 name:
-                                    '${workman['lastName']} ${workman['firstName']}',
+                                    '${workman['firstName']} ${workman['lastName']}',
                                 image: workman['profileImage']['small'],
                                 about: workman['aboutSelf'],
                                 rating: workman['rating'],
                                 startFee: workman['startingFee'],
+                                profession: workman['profession'],
                               ));
                         });
                   }

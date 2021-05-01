@@ -1,4 +1,4 @@
-// import 'package:workmannow/pages/profile/workman_profile.dart';
+import 'package:workmannow/pages/profile/workman_profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workmannow/widgets/hire_button.dart';
@@ -10,13 +10,15 @@ class WorkManTile extends StatelessWidget {
   final String name;
   final String about;
   final int rating;
-  final startFee;
+  final String startFee;
+  final String profession;
   final workMan;
 
   WorkManTile(
       {@required this.name,
       @required this.image,
       @required this.about,
+      @required this.profession,
       @required this.rating,
       @required this.startFee,
       @required this.workMan});
@@ -31,12 +33,12 @@ class WorkManTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         onTap: () {
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: (_) => ProfileScreen(
-          //               workMan: workMan,
-          //             )));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ProfileScreen(
+                        workMan: workMan,
+                      )));
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -58,7 +60,7 @@ class WorkManTile extends StatelessWidget {
                         child: image != null
                             ? FadeInImage.assetNetwork(
                                 placeholder: 'assets/dp.png',
-                                image: 'http://192.168.43.77:3001/$image',
+                                image: 'http://192.168.0.108:3001/$image',
                                 fit: BoxFit.cover,
                               )
                             : Image.asset('assets/dp.png'),
@@ -75,6 +77,12 @@ class WorkManTile extends StatelessWidget {
                           name.titleCase,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
+                        SizedBox(height: 5,),
+                        Text(
+                          profession.titleCase,
+                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 10.0,),
+                        ),
+                        SizedBox(height: 5,),
                         Text(
                           about.length > 100
                               ? "${about.substring(0, 100)}....".sentenceCase

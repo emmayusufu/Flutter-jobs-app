@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:workmannow/classes/auth/profile_setup.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/auth.dart';
-import 'package:workmannow/widgets/InputField.dart';
+import 'package:workmannow/widgets/input_field.dart';
 import 'package:workmannow/widgets/dropdown_search.dart';
 import 'package:workmannow/widgets/multi_dropdown_search.dart';
-import 'package:workmannow/widgets/round_button.dart';
+import 'package:workmannow/widgets/rounded_button.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/cupertino.dart';
@@ -486,7 +486,7 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    RoundButton(
+                    RoundedButton(
                       cb: () {
                         if (_formKey.currentState.validate()) {
                           _submit();
