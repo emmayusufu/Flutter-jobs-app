@@ -1,10 +1,10 @@
-import 'package:workmannow/classes/user/auth/otp.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'package:provider/provider.dart';
+import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/screens/auth/choose_account_type.dart';
 import 'package:workmannow/providers/user.dart';
@@ -133,7 +133,7 @@ class _OTPScreenState extends State<OTPScreen> {
 
   Future _submit(context) async {
     EasyLoading.show(
-        status: 'Verifying OTP ...',
+        status: 'Verifying OTP',
         maskType: EasyLoadingMaskType.black,
         dismissOnTap: false,
         indicator: SpinKitPouringHourglass(
@@ -141,7 +141,7 @@ class _OTPScreenState extends State<OTPScreen> {
           size: 50.0,
         ));
     Provider.of<UserProvider>(context, listen: false)
-        .verifyOtp(OTPModal(phoneNumber: widget.phoneNumber, otp: otp))
+        .verifyOtp(User(phoneNumber: widget.phoneNumber, otp: otp))
         .then((String message) async {
       if (message == 'success') {
         if (mounted) {

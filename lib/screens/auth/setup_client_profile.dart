@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:workmannow/classes/user/auth/profile.dart';
+import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
 import 'package:workmannow/widgets/input_field.dart';
@@ -20,8 +20,7 @@ class SetUpClientProfile extends StatefulWidget {
 class _SetUpClientProfileState extends State<SetUpClientProfile> {
   String firstName;
   String lastName;
-  File _dpImage;
-  bool loading = false;
+  File profileImage;
 
   final picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
@@ -63,8 +62,8 @@ class _SetUpClientProfileState extends State<SetUpClientProfile> {
                       children: [
                         CircleAvatar(
                             radius: 80.0,
-                            backgroundImage: _dpImage != null
-                                ? FileImage(_dpImage)
+                            backgroundImage: profileImage != null
+                                ? FileImage(profileImage)
                                 : AssetImage('assets/dp.png')),
                         Positioned(
                           bottom: 0.0,
@@ -146,11 +145,11 @@ class _SetUpClientProfileState extends State<SetUpClientProfile> {
   }
 
   Future getDp() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-    if (pickedFile != null) {
+    final pickedImage = await picker.getImage(source: ImageSource.camera);
+    if (pickedImage != null) {
       setState(() {
-        if (pickedFile != null) {
-          _dpImage = File(pickedFile.path);
+        if (pickedImage != null) {
+          profileImage = File(pickedImage.path);
         }
       });
     }
@@ -177,8 +176,10 @@ class _SetUpClientProfileState extends State<SetUpClientProfile> {
           size: 50.0,
         ));
     Provider.of<UserProvider>(_scaffoldKey.currentContext, listen: false)
-        .setUpClientProfile(ClientProfile(
-            dpImage: _dpImage, firstName: firstName, lastName: lastName))
+        .setUpClientProfile(User(
+            profileImage: profileImage,
+            firstName: firstName,
+            lastName: lastName))
         .then((String message) async {
       if (message == 'success') {
         if (mounted) {

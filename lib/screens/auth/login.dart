@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:provider/provider.dart';
-import 'package:workmannow/classes/user/auth/login.dart';
+import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
 import 'package:workmannow/widgets/password_input_field.dart';
@@ -139,7 +139,7 @@ class _LoginState extends State<Login> {
           size: 50.0,
         ));
     Provider.of<UserProvider>(_scaffoldKey.currentContext, listen: false)
-        .login(LoginModal(phoneNumber: phoneNumber, password: password))
+        .login(User(phoneNumber: phoneNumber, password: password))
         .then((String message) async {
       if (message == 'success') {
         if (mounted) {

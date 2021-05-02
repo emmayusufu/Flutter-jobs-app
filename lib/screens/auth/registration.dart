@@ -4,7 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:provider/provider.dart';
-import 'package:workmannow/classes/user/auth/registration.dart';
+import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/screens/auth/terms_of_service.dart';
 import 'package:workmannow/providers/user.dart';
@@ -151,7 +151,7 @@ class _RegistrationState extends State<Registration> {
           size: 50.0,
         ));
     Provider.of<UserProvider>(context, listen: false)
-        .signup(SignUpModal(
+        .register(User(
             email: email, password: password, phoneNumber: phoneNumber))
         .then((String message) async {
       if (message == 'success') {

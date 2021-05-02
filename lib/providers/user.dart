@@ -1,12 +1,5 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-
-import 'package:workmannow/classes/user/auth/login.dart';
-import 'package:workmannow/classes/user/auth/otp.dart';
-import 'package:workmannow/classes/user/auth/profile.dart';
-import 'package:workmannow/classes/user/auth/registration.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
@@ -28,7 +21,7 @@ class UserProvider extends ChangeNotifier {
     return _user != null;
   }
 
-  Future<String> login(LoginModal loginDetails) async {
+  Future<String> login(User loginDetails) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String message;
     try {
@@ -38,9 +31,9 @@ class UserProvider extends ChangeNotifier {
             'password': loginDetails.password
           });
       if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
+        Map res = jsonDecode(response.body);
         if (res['message'] == 'success') {
-          await prefs.setString('user', convert.jsonEncode(res['user']));
+          await prefs.setString('user', jsonEncode(res['user']));
           message = res['message'];
           user = res['user'];
         } else {
@@ -56,7 +49,7 @@ class UserProvider extends ChangeNotifier {
     return message;
   }
 
-  Future<String> signup(SignUpModal signUpDetails) async {
+  Future<String> register(User signUpDetails) async {
     String message;
     try {
       var response = await http
@@ -66,7 +59,7 @@ class UserProvider extends ChangeNotifier {
         'password': signUpDetails.password
       });
       if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
+        Map res = jsonDecode(response.body);
         if (res['message'] == 'success') {
           message = res['message'];
         } else {
@@ -81,13 +74,14 @@ class UserProvider extends ChangeNotifier {
     return message;
   }
 
-  Future<String> verifyOtp(OTPModal otp) async {
+  Future<String> verifyOtp(User otp) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('http://$url/api/otp_verification'),
+      var response = await http.post(
+          Uri.parse('http://$url/api/otp_verification'),
           body: {"phoneNumber": otp.phoneNumber, "otp": otp.otp});
       if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
+        Map res = jsonDecode(response.body);
         if (res['message'] == 'success') {
           user = res;
           message = res['message'];
@@ -104,7 +98,7 @@ class UserProvider extends ChangeNotifier {
   }
 
 // ============================================================================== setting up client profile
-  Future<String> setUpClientProfile(ClientProfile client) async {
+  Future<String> setUpClientProfile(User client) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String message;
     var dio = Dio();
@@ -114,8 +108,8 @@ class UserProvider extends ChangeNotifier {
         "userId": user['id'],
         "firstName": client.firstName,
         "lastName": client.lastName,
-        "profileImage": await MultipartFile.fromFile(client.dpImage.path,
-            filename: basename(client.dpImage.path)),
+        "profileImage": await MultipartFile.fromFile(client.profileImage.path,
+            filename: basename(client.profileImage.path)),
       });
       var response = await dio.post(
         "http://$url/api/setup_client_profile",
@@ -125,7 +119,7 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = response.data;
         if (res['message'] == 'success') {
-          await prefs.setString('user', convert.jsonEncode(res['user']));
+          await prefs.setString('user', jsonEncode(res['user']));
           message = res['message'];
           user = res['user'];
         } else {
@@ -174,7 +168,7 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = response.data;
         message = res['message'];
-        await prefs.setString('user', convert.jsonEncode(res['user']));
+        await prefs.setString('user', jsonEncode(res['user']));
         message = res['message'];
         user = res['user'];
       } else {
@@ -192,10 +186,10 @@ class UserProvider extends ChangeNotifier {
     final userId = userData['_id'];
     List workmen;
     try {
-      var response = await http
-          .get(Uri.parse('http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession&role=workman&userId=$userId'));
+      var response = await http.get(Uri.parse(
+          'http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession&role=workman&userId=$userId'));
       if (response.statusCode == 200) {
-        workmen = convert.jsonDecode(response.body)['users'];
+        workmen = jsonDecode(response.body)['users'];
       } else {
         print(response.statusCode);
       }
@@ -212,27 +206,27 @@ class UserProvider extends ChangeNotifier {
     var dio = Dio();
     try {
       FormData formData = FormData.fromMap({
-        'userId':user['_id'],
+        'userId': user['_id'],
         "regionOfOperation": workman.regionOfOperation,
         "specialities": workman.specialities,
         'aboutSelf': workman.aboutSelf,
         "profession": workman.profession,
         "qualification": workman.qualification,
         "startingFee": workman.startingFee,
-        'dob':workman.dob,
-        "role":workman.role,
+        'dob': workman.dob,
+        "role": workman.role,
         'nin': workman.nin,
         "profileImage": workman.profileImage != null
             ? await MultipartFile.fromFile(workman.profileImage.path,
-            filename: basename(workman.profileImage.path))
+                filename: basename(workman.profileImage.path))
             : null,
         "idBackImage": workman.idBackImage != null
             ? await MultipartFile.fromFile(workman.idBackImage.path,
-            filename: basename(workman.idBackImage.path))
+                filename: basename(workman.idBackImage.path))
             : null,
         "idFrontImage": workman.idFrontImage != null
             ? await MultipartFile.fromFile(workman.idFrontImage.path,
-            filename: basename(workman.idFrontImage.path))
+                filename: basename(workman.idFrontImage.path))
             : null,
       });
       var response = await dio.post(
@@ -243,7 +237,7 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = response.data;
         message = res['message'];
-        await prefs.setString('user', convert.jsonEncode(res['user']));
+        await prefs.setString('user', jsonEncode(res['user']));
       } else {
         print(response.statusCode);
       }
@@ -258,13 +252,12 @@ class UserProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     user = null;
-    notifyListeners();
   }
 
   Future<void> tryAutoLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('user')) {
-      final userData = convert.jsonDecode(prefs.getString('user'));
+      final userData = jsonDecode(prefs.getString('user'));
       user = userData;
     }
   }

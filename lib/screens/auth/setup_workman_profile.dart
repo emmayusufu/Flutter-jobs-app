@@ -239,10 +239,10 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                                 Border.all(color: Colors.blue[100], width: 1)),
                         child: Row(
                           children: [
-                             Icon(
-                                  CupertinoIcons.calendar,
-                                  color: Colors.grey,
-                                ),
+                            Icon(
+                              CupertinoIcons.calendar,
+                              color: Colors.grey,
+                            ),
                             SizedBox(
                               width: 5.0,
                             ),
@@ -264,7 +264,7 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                     DropDownSearch(
                         popUpTitle: 'Professions',
                         items: professions,
-                        onChanged: (value) async{
+                        onChanged: (value) async {
                           if (value != null) {
                             await getSpecialitiesList(value);
                           }
