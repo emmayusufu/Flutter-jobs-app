@@ -1,6 +1,5 @@
 import 'package:workmannow/helpers/colors.dart';
-
-// import 'package:workmannow/pages/hiring/hire_details.dart';
+import 'package:workmannow/screens/hiring/hiring_details.dart';
 import 'package:flutter/material.dart';
 
 class HireButton extends StatelessWidget {
@@ -12,13 +11,13 @@ class HireButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         fullscreenDialog: true,
-        //         builder: (_) => HireDetails(
-        //               workman: workMan,
-        //             )));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (_) => HiringDetails(
+                      workman: workMan,
+                    )));
       },
       child: Text(
         'Hire',

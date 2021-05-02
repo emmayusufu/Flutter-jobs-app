@@ -1,22 +1,189 @@
 import 'dart:convert';
 
-import 'package:workmannow/classes/auth/update_account.dart';
-import 'package:workmannow/classes/hire/index.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
-import 'package:path/path.dart';
 
+import 'package:workmannow/classes/user/auth/login.dart';
+import 'package:workmannow/classes/user/auth/otp.dart';
+import 'package:workmannow/classes/user/auth/profile.dart';
+import 'package:workmannow/classes/user/auth/registration.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmannow/classes/user/index.dart';
 
 class UserProvider extends ChangeNotifier {
   final String url = "192.168.0.108:3001";
+  var _user;
 
-  Future<String> getCurrentUserID() async {
+  get user => _user;
+
+  set user(value) {
+    _user = value;
+    notifyListeners();
+  }
+
+  bool get isAuthenticated {
+    return _user != null;
+  }
+
+  Future<String> login(LoginModal loginDetails) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userData = jsonDecode(prefs.getString('user'));
-    return userData['_id'];
+    String message;
+    try {
+      var response = await http.post(Uri.parse('http://$url/api/user_login'),
+          body: {
+            'phoneNumber': loginDetails.phoneNumber,
+            'password': loginDetails.password
+          });
+      if (response.statusCode == 200) {
+        Map res = convert.jsonDecode(response.body);
+        if (res['message'] == 'success') {
+          await prefs.setString('user', convert.jsonEncode(res['user']));
+          message = res['message'];
+          user = res['user'];
+        } else {
+          message = res['message'];
+        }
+      } else {
+        print(response.statusCode);
+        message = 'An error occurred';
+      }
+    } catch (e) {
+      print('caught error : $e while logging in');
+    }
+    return message;
+  }
+
+  Future<String> signup(SignUpModal signUpDetails) async {
+    String message;
+    try {
+      var response = await http
+          .post(Uri.parse('http://$url/api/user_registration'), body: {
+        "email": signUpDetails.email,
+        'phoneNumber': signUpDetails.phoneNumber,
+        'password': signUpDetails.password
+      });
+      if (response.statusCode == 200) {
+        Map res = convert.jsonDecode(response.body);
+        if (res['message'] == 'success') {
+          message = res['message'];
+        } else {
+          message = res['message'];
+        }
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print('caught error : $e while registering account');
+    }
+    return message;
+  }
+
+  Future<String> verifyOtp(OTPModal otp) async {
+    String message;
+    try {
+      var response = await http.post(Uri.parse('http://$url/api/otp_verification'),
+          body: {"phoneNumber": otp.phoneNumber, "otp": otp.otp});
+      if (response.statusCode == 200) {
+        Map res = convert.jsonDecode(response.body);
+        if (res['message'] == 'success') {
+          user = res;
+          message = res['message'];
+        } else {
+          message = res['message'];
+        }
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print('caught error : $e while verifying otp');
+    }
+    return message;
+  }
+
+// ============================================================================== setting up client profile
+  Future<String> setUpClientProfile(ClientProfile client) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String message;
+    var dio = Dio();
+
+    try {
+      FormData formData = FormData.fromMap({
+        "userId": user['id'],
+        "firstName": client.firstName,
+        "lastName": client.lastName,
+        "profileImage": await MultipartFile.fromFile(client.dpImage.path,
+            filename: basename(client.dpImage.path)),
+      });
+      var response = await dio.post(
+        "http://$url/api/setup_client_profile",
+        data: formData,
+        options: Options(contentType: 'application/x-www-form-urlencoded'),
+      );
+      if (response.statusCode == 200) {
+        Map res = response.data;
+        if (res['message'] == 'success') {
+          await prefs.setString('user', convert.jsonEncode(res['user']));
+          message = res['message'];
+          user = res['user'];
+        } else {
+          message = res['message'];
+        }
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print('caught error $e while setting up client profile');
+    }
+    return message;
+  }
+
+// ============================================================================== setting up workman profile
+  Future<String> setUpWorkManProfile(User workman) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String message;
+    var dio = Dio();
+
+    try {
+      FormData formData = FormData.fromMap({
+        "id": user['id'],
+        "firstName": workman.firstName,
+        "lastName": workman.lastName,
+        "regionOfOperation": workman.regionOfOperation,
+        "dob": workman.dob,
+        "specialities": workman.specialities,
+        "nin": workman.nin,
+        'aboutSelf': workman.aboutSelf,
+        "profession": workman.profession,
+        "qualification": workman.qualification,
+        "startingFee": workman.startingFee,
+        "profileImage": await MultipartFile.fromFile(workman.profileImage.path,
+            filename: basename(workman.profileImage.path)),
+        "idBack": await MultipartFile.fromFile(workman.idBackImage.path,
+            filename: basename(workman.idBackImage.path)),
+        "idFront": await MultipartFile.fromFile(workman.idFrontImage.path,
+            filename: basename(workman.idFrontImage.path)),
+      });
+      var response = await dio.post(
+        "http://$url/api/setup_workman_profile",
+        data: formData,
+        options: Options(contentType: 'application/x-www-form-urlencoded'),
+      );
+      if (response.statusCode == 200) {
+        Map res = response.data;
+        message = res['message'];
+        await prefs.setString('user', convert.jsonEncode(res['user']));
+        message = res['message'];
+        user = res['user'];
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print('caught error $e while setting up workman profile');
+    }
+    return message;
   }
 
   Future<List> fetchAllWorkMen() async {
@@ -38,66 +205,38 @@ class UserProvider extends ChangeNotifier {
     return workmen;
   }
 
-//  ============================================ future function for hiring a workmen
-  Future<String> hireWorkMan(HireModal hireDetails) async {
-    String message;
-    try {
-      var response = await http
-          .post(Uri.parse('https://$url/hire/${hireDetails.workManId}'), body: {
-        'clientID': hireDetails.clientId,
-        'description': hireDetails.jobDescription,
-        'clientName': hireDetails.clientName,
-        'location': hireDetails.location,
-        'contact': hireDetails.contact,
-        "clientImage": hireDetails.clientImage,
-        "geocodes": jsonEncode(hireDetails.geocodes)
-      });
-      if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
-        message = res['message'];
-      } else {
-        print(response.statusCode);
-      }
-    } catch (e) {
-      print('caught error : $e while hiring workman');
-    }
-    return message;
-  }
-
-  // ==================================================================================== future function for updating user acount
-  Future<String> updateWorkManProfile(UpdateWorkManProfile workman) async {
+  // ==================================================================================== future function for updating user profile
+  Future<String> updateUserProfile(User workman) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userData = jsonDecode(prefs.getString('user'));
-    final userId = userData['_id'];
     String message;
     var dio = Dio();
-
     try {
       FormData formData = FormData.fromMap({
-        "areaOfOperation": workman.areaOfOperation,
+        'userId':user['_id'],
+        "regionOfOperation": workman.regionOfOperation,
         "specialities": workman.specialities,
         'aboutSelf': workman.aboutSelf,
         "profession": workman.profession,
         "qualification": workman.qualification,
         "startingFee": workman.startingFee,
-        'workman': '${workman.workMan}',
-        'client': '${workman.client}',
+        'dob':workman.dob,
+        "role":workman.role,
         'nin': workman.nin,
-        "dpImage": workman.dpImage != null
-            ? await MultipartFile.fromFile(workman.dpImage.path,
-                filename: basename(workman.dpImage.path))
+        "profileImage": workman.profileImage != null
+            ? await MultipartFile.fromFile(workman.profileImage.path,
+            filename: basename(workman.profileImage.path))
             : null,
-        "idBack": workman.idBack != null
-            ? await MultipartFile.fromFile(workman.idBack.path,
-                filename: basename(workman.idBack.path))
+        "idBackImage": workman.idBackImage != null
+            ? await MultipartFile.fromFile(workman.idBackImage.path,
+            filename: basename(workman.idBackImage.path))
             : null,
-        "idFront": workman.idFront != null
-            ? await MultipartFile.fromFile(workman.idFront.path,
-                filename: basename(workman.idFront.path))
+        "idFrontImage": workman.idFrontImage != null
+            ? await MultipartFile.fromFile(workman.idFrontImage.path,
+            filename: basename(workman.idFrontImage.path))
             : null,
       });
       var response = await dio.post(
-        "https://$url/updateProfile/$userId",
+        "http://$url/api/update_user_profile",
         data: formData,
         options: Options(contentType: 'application/x-www-form-urlencoded'),
       );
@@ -105,8 +244,6 @@ class UserProvider extends ChangeNotifier {
         Map res = response.data;
         message = res['message'];
         await prefs.setString('user', convert.jsonEncode(res['user']));
-
-        // user = res['user'];
       } else {
         print(response.statusCode);
       }
@@ -116,74 +253,19 @@ class UserProvider extends ChangeNotifier {
     return message;
   }
 
-// ==================================================================================== function for completing hire
-  Future<String> completeHire(
-      {String documentRef, double workManRating, String review}) async {
-    String message;
-    try {
-      var response = await http.post(Uri.parse('https://$url/complete_hiring'),
-          body: {
-            "docRef": documentRef,
-            "workManRating": workManRating,
-            "review": review
-          });
-      if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
-        if (res['message'] == 'success') {
-          message = res['message'];
-        } else {
-          message = res['message'];
-        }
-      } else {
-        print(response.statusCode);
-      }
-    } catch (e) {
-      print('caught error : $e while accepting hire');
-    }
-    return message;
+// ============================================================================== logging out
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    user = null;
+    notifyListeners();
   }
 
-// ==================================================================================== function for completing hire
-  Future<String> acceptHire({documentRef}) async {
-    String message;
-    try {
-      var response = await http.post(Uri.parse('https://$url/accept_hiring'),
-          body: {"docRef": documentRef});
-      if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
-        if (res['message'] == 'success') {
-          message = res['message'];
-        } else {
-          message = res['message'];
-        }
-      } else {
-        print(response.statusCode);
-      }
-    } catch (e) {
-      print('caught error : $e while accepting hire');
+  Future<void> tryAutoLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('user')) {
+      final userData = convert.jsonDecode(prefs.getString('user'));
+      user = userData;
     }
-    return message;
-  }
-
-// ==================================================================================== function for completing hire
-  Future<String> declineHire({documentRef}) async {
-    String message;
-    try {
-      var response = await http.post(Uri.parse('https://$url/decline_hiring'),
-          body: {"docRef": documentRef});
-      if (response.statusCode == 200) {
-        Map res = convert.jsonDecode(response.body);
-        if (res['message'] == 'success') {
-          message = res['message'];
-        } else {
-          message = res['message'];
-        }
-      } else {
-        print(response.statusCode);
-      }
-    } catch (e) {
-      print('caught error : $e while declining hire');
-    }
-    return message;
   }
 }

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 class DropDownSearch extends StatelessWidget {
   final List items;
-  final Function cb;
+  final Function onChanged;
   final String value;
   final String hint;
   final String popUpTitle;
   DropDownSearch(
       {@required this.items,
-      @required this.cb,
+      @required this.onChanged,
       @required this.value,
       this.popUpTitle,
       @required this.hint});
@@ -38,7 +38,7 @@ class DropDownSearch extends StatelessWidget {
       showSelectedItem: true,
       items: [...items],
       hint: hint,
-      onChanged: cb,
+      onChanged: onChanged,
       selectedItem: value,
       clearButton: Icon(
         Icons.clear,

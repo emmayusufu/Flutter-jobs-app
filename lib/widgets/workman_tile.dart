@@ -1,4 +1,4 @@
-import 'package:workmannow/pages/profile/workman_profile.dart';
+import 'package:workmannow/screens/profile/workman.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workmannow/widgets/hire_button.dart';

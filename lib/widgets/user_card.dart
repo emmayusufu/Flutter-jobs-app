@@ -1,4 +1,4 @@
-// import 'package:WorkManNow/pages/profile/workman_profile.dart';
+// import 'package:WorkManNow/pages/profile/workman.dart';
 import 'package:workmannow/widgets/rating.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

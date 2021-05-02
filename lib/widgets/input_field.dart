@@ -6,7 +6,7 @@ class InputField extends StatelessWidget {
   final String labelText;
   final Function validator;
   final String helperText;
-  final Function cb;
+  final Function onChanged;
   final inputFormatters;
   final prefix;
   final TextEditingController controller;
@@ -20,7 +20,7 @@ class InputField extends StatelessWidget {
       this.inputFormatters,
       this.prefix,
       this.controller,
-      this.cb});
+      this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class InputField extends StatelessWidget {
       style: TextStyle(color: Colors.blue, fontSize: 13.0),
       inputFormatters: inputFormatters,
       controller: controller,
-      onChanged: cb,
+      onChanged: onChanged,
       obscureText: obscureText == null ? false : obscureText,
       decoration: InputDecoration(
           helperText: helperText,

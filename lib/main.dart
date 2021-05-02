@@ -1,15 +1,13 @@
-import 'package:workmannow/pages/pending_hirings/index.dart';
+import 'package:workmannow/screens/pending_hirings/index.dart';
 import 'package:workmannow/providers/firebase.dart';
 import 'package:workmannow/helpers/theme.dart';
-import 'package:workmannow/pages/auth/login.dart';
-import 'package:workmannow/pages/auth/registration.dart';
-// import 'package:workmannow/pages/auth/setup_workman_profile.dart';
-import 'package:workmannow/pages/enable_location/index.dart';
-import 'package:workmannow/pages/home/index.dart';
-import 'package:workmannow/pages/notification/index.dart';
-// import 'package:workmannow/pages/intro_views/index.dart';
-import 'package:workmannow/pages/profile/user_profile_screen.dart';
-import 'package:workmannow/pages/splash/index.dart';
+import 'package:workmannow/screens/auth/login.dart';
+import 'package:workmannow/screens/auth/registration.dart';
+import 'package:workmannow/screens/enable_location/index.dart';
+import 'package:workmannow/screens/home/index.dart';
+import 'package:workmannow/screens/notification/index.dart';
+import 'package:workmannow/screens/profile/user.dart';
+import 'package:workmannow/screens/splash/index.dart';
 import 'package:workmannow/providers/location.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,8 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:location_permissions/location_permissions.dart';
 import 'package:provider/provider.dart';
-import 'package:workmannow/providers/auth.dart';
 import 'package:workmannow/providers/user.dart';
+import 'package:workmannow/providers/hiring.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -60,14 +58,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => AuthProvider()),
+          ChangeNotifierProvider(create: (context) => HiringProvider()),
           ChangeNotifierProvider(create: (context) => UserProvider()),
           ChangeNotifierProvider(create: (context) => LocationProvider()),
           ChangeNotifierProvider(create: (context) => LocationProvider()),
           ChangeNotifierProvider(
               create: (context) => FireBaseServiceProvider()),
         ],
-        child: Consumer<AuthProvider>(builder: (context, authProvider, child) {
+        child: Consumer<UserProvider>(builder: (context, userProvider, child) {
           return MaterialApp(
             title: 'WorkManNow',
             theme: ThemeHelper.theme,
@@ -94,10 +92,10 @@ class _MyAppState extends State<MyApp> {
                                 ConnectionState.active &&
                             snapshot.hasData) {
                           if (snapshot.data) {
-                            component = authProvider.isAuthenticated
+                            component = userProvider.isAuthenticated
                                 ? Home()
                                 : FutureBuilder(
-                                    future: authProvider.tryAutoLogin(),
+                                    future: userProvider.tryAutoLogin(),
                                     builder: (context, snapshot) =>
                                         snapshot.connectionState ==
                                                 ConnectionState.waiting
