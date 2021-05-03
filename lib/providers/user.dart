@@ -21,8 +21,14 @@ class UserProvider extends ChangeNotifier {
     return _user != null;
   }
 
-  Future<String> login(User loginDetails) async {
+  Future<void> storeUser(Map<String, dynamic> userData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', jsonEncode(userData));
+    user = userData;
+    notifyListeners();
+  }
+
+  Future<String> login(User loginDetails) async {
     String message;
     try {
       var response = await http.post(Uri.parse('http://$url/api/user_login'),
@@ -33,9 +39,8 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = jsonDecode(response.body);
         if (res['message'] == 'success') {
-          await prefs.setString('user', jsonEncode(res['user']));
+          await storeUser(res['user']);
           message = res['message'];
-          user = res['user'];
         } else {
           message = res['message'];
         }
@@ -99,10 +104,8 @@ class UserProvider extends ChangeNotifier {
 
 // ============================================================================== setting up client profile
   Future<String> setUpClientProfile(User client) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     String message;
     var dio = Dio();
-
     try {
       FormData formData = FormData.fromMap({
         "userId": user['id'],
@@ -119,9 +122,8 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = response.data;
         if (res['message'] == 'success') {
-          await prefs.setString('user', jsonEncode(res['user']));
+          await storeUser(res['user']);
           message = res['message'];
-          user = res['user'];
         } else {
           message = res['message'];
         }
@@ -136,7 +138,6 @@ class UserProvider extends ChangeNotifier {
 
 // ============================================================================== setting up workman profile
   Future<String> setUpWorkManProfile(User workman) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     String message;
     var dio = Dio();
 
@@ -168,9 +169,8 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = response.data;
         message = res['message'];
-        await prefs.setString('user', jsonEncode(res['user']));
+        await storeUser(res['user']);
         message = res['message'];
-        user = res['user'];
       } else {
         print(response.statusCode);
       }
@@ -201,7 +201,6 @@ class UserProvider extends ChangeNotifier {
 
   // ==================================================================================== future function for updating user profile
   Future<String> updateUserProfile(User workman) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     String message;
     var dio = Dio();
     try {
@@ -236,8 +235,8 @@ class UserProvider extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         Map res = response.data;
+        await storeUser(res['user']);
         message = res['message'];
-        await prefs.setString('user', jsonEncode(res['user']));
       } else {
         print(response.statusCode);
       }
