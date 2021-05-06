@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/input_field.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/input_field.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
 
 class SetUpClientProfile extends StatefulWidget {
   @override

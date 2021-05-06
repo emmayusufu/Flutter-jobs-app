@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:workmannow/screens/home/widgets/notification_button.dart';
-import 'package:workmannow/screens/home/widgets/pending_button.dart';
-import 'package:workmannow/screens/home/widgets/search_container.dart';
+import 'package:workmannow/widgets/buttons/client_hirings_button.dart';
+import 'package:workmannow/widgets/utils/search_container.dart';
 import 'package:workmannow/providers/user.dart';
 import 'package:workmannow/providers/firebase.dart';
-import 'package:workmannow/widgets/workman_tile.dart';
+import 'package:workmannow/widgets/buttons/workman_hirings_button.dart';
+import 'package:workmannow/widgets/cards/workman_list_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,19 +50,17 @@ class _HomeState extends State<Home> {
         print('Message also contained a notification: ${message.notification}');
       }
     });
-    // =====================================storing user locations
     Provider.of<FireBaseServiceProvider>(context, listen: false)
         .storeLocations();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
+    return Consumer<UserProvider>(builder: (context, userProvider, child) {
       var user = userProvider.user;
       return Scaffold(
         appBar: AppBar(
-          // toolbarHeight: 120.0,
+          toolbarHeight: 120.0,
           leading: GestureDetector(
             onTap: () {
               Navigator.pushNamed(context, '/user_profile');
@@ -71,14 +69,17 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(2.0),
               child: CircleAvatar(
                   radius: 70.0,
-                  backgroundImage : user['profileImage'] !=null ? NetworkImage('http://192.168.0.108:3001/'+user['profileImage']['thumbnail']) : AssetImage('assets/dp.png')),
+                  backgroundImage: user['profileImage'] != null
+                      ? NetworkImage('http://192.168.43.77:3001/' +
+                          user['profileImage']['thumbnail'])
+                      : AssetImage('assets/dp.png')),
             ),
           ),
           title: Text('Home'),
           centerTitle: true,
           actions: [
-            PendingButton(),
-            user['role'] == "workman" ? NotificationButton() : SizedBox(),
+            ClientHiringsButton(),
+            user['role'] == "workman" ? WorkManHiringsButton() : SizedBox(),
           ],
           bottom: PreferredSize(
               child: Padding(
@@ -160,7 +161,7 @@ class _HomeState extends State<Home> {
                           return Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: WorkManTile(
+                              child: WorkManListTile(
                                 workMan: workman,
                                 name:
                                     '${workman['firstName']} ${workman['lastName']}',

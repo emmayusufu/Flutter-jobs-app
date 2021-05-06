@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmannow/classes/user/index.dart';
 
 class UserProvider extends ChangeNotifier {
-  final String url = "192.168.0.108:3001";
+  final String url = "192.168.43.77:3001";
   var _user;
 
   get user => _user;
@@ -88,7 +88,7 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         Map res = jsonDecode(response.body);
         if (res['message'] == 'success') {
-          user = res;
+          user = res['user'];
           message = res['message'];
         } else {
           message = res['message'];
@@ -143,7 +143,7 @@ class UserProvider extends ChangeNotifier {
 
     try {
       FormData formData = FormData.fromMap({
-        "id": user['id'],
+        "userId": user['_id'],
         "firstName": workman.firstName,
         "lastName": workman.lastName,
         "regionOfOperation": workman.regionOfOperation,
@@ -156,9 +156,9 @@ class UserProvider extends ChangeNotifier {
         "startingFee": workman.startingFee,
         "profileImage": await MultipartFile.fromFile(workman.profileImage.path,
             filename: basename(workman.profileImage.path)),
-        "idBack": await MultipartFile.fromFile(workman.idBackImage.path,
+        "idBackImage": await MultipartFile.fromFile(workman.idBackImage.path,
             filename: basename(workman.idBackImage.path)),
-        "idFront": await MultipartFile.fromFile(workman.idFrontImage.path,
+        "idFrontImage": await MultipartFile.fromFile(workman.idFrontImage.path,
             filename: basename(workman.idFrontImage.path)),
       });
       var response = await dio.post(
@@ -187,7 +187,7 @@ class UserProvider extends ChangeNotifier {
     List workmen;
     try {
       var response = await http.get(Uri.parse(
-          'http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession&role=workman&userId=$userId'));
+          'http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession,phoneNumber,specialities,&role=workman&userId=$userId'));
       if (response.statusCode == 200) {
         workmen = jsonDecode(response.body)['users'];
       } else {

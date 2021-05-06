@@ -1,31 +1,22 @@
 import 'dart:convert';
 
-import 'package:workmannow/classes/hiring/index.dart';
-import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/screens/hiring/waiting.dart';
-import 'package:workmannow/screens/map/address_search.dart';
-import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/providers/location.dart';
-import 'package:workmannow/providers/hiring.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:location/location.dart';
+import 'package:intl_phone_field/phone_number.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:recase/recase.dart';
-
-// class GeoCodes {
-//   final String lat;
-//   final String long;
-
-//   GeoCodes({@required this.lat, @required this.long});
-// }
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmannow/classes/hiring/index.dart';
+import 'package:workmannow/helpers/colors.dart';
+import 'package:workmannow/providers/hiring.dart';
+import 'package:workmannow/providers/user.dart';
+import 'package:workmannow/screens/utility/waiting.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/phone_input_field.dart';
 
 class HiringDetails extends StatefulWidget {
   final workman;
@@ -37,31 +28,13 @@ class HiringDetails extends StatefulWidget {
 }
 
 class _HiringDetailsState extends State<HiringDetails> {
-  String contact = '';
+  String phoneNumber = '';
   bool isContactValid;
   String jobDescription;
   String location;
-  Map<String, dynamic> geoCodes;
 
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Future<void> _getCurrentUserLocation() async {
-    final locData = await Location().getLocation();
-    Provider.of<LocationProvider>(context, listen: false)
-        .getPlaceAddress(locData.latitude, locData.longitude)
-        .then((value) {
-      setState(() {
-        location = value;
-        geoCodes = {
-          "longitude": locData.longitude,
-          "latitude": locData.latitude
-        };
-      });
-    }).catchError((e) {
-      print('caught error $e while geocoding');
-    });
-  }
 
   Future<Map> getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -72,10 +45,9 @@ class _HiringDetailsState extends State<HiringDetails> {
   @override
   void initState() {
     super.initState();
-    _getCurrentUserLocation();
     getUser().then((user) {
       setState(() {
-        contact = user['phoneNumber'];
+        phoneNumber = user['phoneNumber'];
       });
     });
   }
@@ -98,13 +70,13 @@ class _HiringDetailsState extends State<HiringDetails> {
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: MyColors.blue),
             title: Text(
-              'Edit profile',
+              'Workman profile',
               style: TextStyle(color: MyColors.blue),
             ),
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: SingleChildScrollView(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Column(
                 children: [
                   SizedBox(
@@ -116,7 +88,8 @@ class _HiringDetailsState extends State<HiringDetails> {
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Text(
                           'WorkMan details',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.grey),
                         ),
                       ),
                     ],
@@ -139,7 +112,7 @@ class _HiringDetailsState extends State<HiringDetails> {
                                 radius: 50.0,
                                 backgroundImage: workman['profileImage'] != null
                                     ? NetworkImage(
-                                        'http://192.168.0.108:3001/' +
+                                        'http://192.168.43.77:3001/' +
                                             workman['profileImage']['medium'],
                                       )
                                     : AssetImage('assets/dp.png')),
@@ -176,7 +149,9 @@ class _HiringDetailsState extends State<HiringDetails> {
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Text(
                           'Your(Client) details',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black45),
                         ),
                       ),
                     ],
@@ -194,18 +169,14 @@ class _HiringDetailsState extends State<HiringDetails> {
                           ListTile(
                             subtitle: Text('Your contact'),
                             leading: CircleAvatar(child: Icon(Icons.phone)),
-                            title: Text(contact),
+                            title: Text(phoneNumber),
                             trailing: IconButton(
                                 icon: Icon(
                                   CupertinoIcons.pen,
                                   size: 25.0,
                                 ),
                                 onPressed: () {
-                                  showModalBottomSheet(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(25.0))),
-                                      isScrollControlled: true,
+                                  showDialog(
                                       context: context,
                                       builder: (context) {
                                         return Container(
@@ -216,59 +187,13 @@ class _HiringDetailsState extends State<HiringDetails> {
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                InternationalPhoneNumberInput(
-                                                  inputDecoration:
-                                                      InputDecoration(
-                                                    hintText: 'Phone number',
-                                                    hintStyle: TextStyle(
-                                                      fontSize: 13.5,
-                                                    ),
-                                                    contentPadding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 0.0,
-                                                            horizontal: 10.0),
-                                                    border: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    30.0)),
-                                                  ),
-                                                  onInputChanged:
+                                                PhoneInputField(
+                                                  onChanged:
                                                       (PhoneNumber number) {
                                                     setState(() {
-                                                      contact =
-                                                          number.phoneNumber;
+                                                      phoneNumber =
+                                                          number.completeNumber;
                                                     });
-                                                  },
-                                                  onInputValidated:
-                                                      (bool value) {
-                                                    setState(() {
-                                                      isContactValid = value;
-                                                    });
-                                                  },
-                                                  selectorConfig:
-                                                      SelectorConfig(
-                                                    selectorType:
-                                                        PhoneInputSelectorType
-                                                            .DIALOG,
-                                                    // backgroundColor:
-                                                    //     Colors.white,
-                                                  ),
-                                                  ignoreBlank: false,
-                                                  selectorTextStyle: TextStyle(
-                                                      color: Colors.black),
-                                                  initialValue: PhoneNumber(
-                                                      isoCode: 'UG'),
-                                                  validator: (value) {
-                                                    if (value.isEmpty) {
-                                                      return 'Please enter your phone number';
-                                                    } else if (value
-                                                        .isNotEmpty) {
-                                                      if (!isContactValid) {
-                                                        return 'An invalid contact was entered';
-                                                      }
-                                                    }
-                                                    return null;
                                                   },
                                                 ),
                                                 Padding(
@@ -286,48 +211,6 @@ class _HiringDetailsState extends State<HiringDetails> {
                                       });
                                 }),
                           ),
-                          Divider(),
-                          // ============================================================================== client location
-                          // ListTile(
-                          //     subtitle: Text('Your location'),
-                          //     leading:
-                          //         CircleAvatar(child: Icon(Icons.location_on)),
-                          //     title: location == null
-                          //         ? SpinKitWave(
-                          //             color: Colors.grey,
-                          //             size: 20.0,
-                          //           )
-                          //         : Text(location),
-                          //     trailing: IconButton(
-                          //         icon: Icon(
-                          //           CupertinoIcons.pen,
-                          //           size: 25.0,
-                          //         ),
-                          //         onPressed: location == null
-                          //             ? null
-                          //             : () {
-                          //                 Navigator.of(context)
-                          //                     .push(MaterialPageRoute(
-                          //                         fullscreenDialog: true,
-                          //                         builder: (_) {
-                          //                           return AddressSearch();
-                          //                         }))
-                          //                     .then((result) {
-                          //                   if (result == null) {
-                          //                     return;
-                          //                   }
-                          //                   setState(() {
-                          //                     location = result.userLocation;
-                          //                     geoCodes = {
-                          //                       "longitude": result
-                          //                           .coordinates.longitude,
-                          //                       "latitude":
-                          //                           result.coordinates.latitude
-                          //                     };
-                          //                   });
-                          //                 }).catchError((e) =>
-                          //                         print('caught error $e'));
-                          //               })),
                         ],
                       ),
                     ),
@@ -341,7 +224,9 @@ class _HiringDetailsState extends State<HiringDetails> {
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Text(
                           'Job description',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black45),
                         ),
                       ),
                     ],
@@ -358,7 +243,9 @@ class _HiringDetailsState extends State<HiringDetails> {
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
-                        labelText: 'A brief description of the job offer',
+                        hintText: 'A brief description of the job offer',
+                        hintStyle:
+                            TextStyle(color: Colors.blue, fontSize: 14.0),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
                               20.0,
@@ -384,25 +271,27 @@ class _HiringDetailsState extends State<HiringDetails> {
                     height: 10.0,
                   ),
                   RoundedButton(
-                    onPressed: location == null || location.isEmpty
-                        ? null
-                        : () {
-                            final FocusScopeNode currentScope =
-                                FocusScope.of(context);
-                            if (!currentScope.hasPrimaryFocus &&
-                                currentScope.hasFocus) {
-                              FocusManager.instance.primaryFocus.unfocus();
-                            }
-                            if (_formKey.currentState.validate()) {
-                              _submit(
-                                  clientID: user['_id'],
-                                  clientImage: user['dpImage'],
-                                  workManID: workman['_id'],
-                                  clientName:
-                                      '${user['firstName']} ${user['lastName']}');
-                            }
-                          },
+                    onPressed: () {
+                      final FocusScopeNode currentScope =
+                          FocusScope.of(context);
+                      if (!currentScope.hasPrimaryFocus &&
+                          currentScope.hasFocus) {
+                        FocusManager.instance.primaryFocus.unfocus();
+                      }
+                      if (_formKey.currentState.validate()) {
+                        _submit(
+                            clientId: user['_id'],
+                            clientImage: jsonEncode(user['profileImage']),
+                            workManId: workman['_id'],
+                            workManPhoneNumber: workman['phoneNumber'],
+                            clientName:
+                                '${user['firstName']} ${user['lastName']}');
+                      }
+                    },
                     name: 'Confirm to proceed',
+                  ),
+                  SizedBox(
+                    height: 10.0,
                   ),
                 ],
               ),
@@ -413,26 +302,31 @@ class _HiringDetailsState extends State<HiringDetails> {
     });
   }
 
-  Future<void> _submit({clientID, workManID, clientName, clientImage}) async {
+  Future<void> _submit(
+      {String clientId,
+      String workManId,
+      String workManPhoneNumber,
+      String clientName,
+      String clientImage}) async {
     EasyLoading.show(
         status: 'Submitting hire request',
         maskType: EasyLoadingMaskType.black,
         dismissOnTap: false,
-        indicator: SpinKitCircle(
+        indicator: SpinKitPouringHourglass(
           color: Colors.white,
           size: 50.0,
         ));
 
     Provider.of<HiringProvider>(context, listen: false)
         .hireWorkMan(Hiring(
-            jobDescription: jobDescription,
-            clientImage: clientImage,
-            clientId: clientID,
-            workManId: workManID,
-            contact: contact,
-            location: location,
-            clientName: clientName,
-            geocodes: geoCodes))
+      jobDescription: jobDescription,
+      clientImage: clientImage,
+      clientId: clientId,
+      workManId: workManId,
+      clientPhoneNumber: phoneNumber,
+      workManPhoneNumber: workManPhoneNumber,
+      clientName: clientName,
+    ))
         .then((String message) async {
       if (message == 'success') {
         if (mounted) {
@@ -445,7 +339,9 @@ class _HiringDetailsState extends State<HiringDetails> {
         await EasyLoading.dismiss();
         _showSnackBar('Something went wrong');
       }
-    }).catchError((err) {
+    }).catchError((err) async {
+      await EasyLoading.dismiss();
+      _showSnackBar('Something went wrong');
       print(err);
     });
   }
@@ -458,6 +354,6 @@ class _HiringDetailsState extends State<HiringDetails> {
         style: TextStyle(fontFamily: 'Quicksand'),
       ),
     );
-    _scaffoldKey.currentState.showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 }

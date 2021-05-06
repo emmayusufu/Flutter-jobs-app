@@ -4,11 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/providers/hiring.dart';
-import 'package:workmannow/widgets/input_field.dart';
-import 'package:workmannow/widgets/dropdown_search.dart';
-import 'package:workmannow/widgets/multi_dropdown_search.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/input_field.dart';
+import 'package:workmannow/widgets/input_fields/dropdown_search.dart';
+import 'package:workmannow/widgets/input_fields/multi_dropdown_search.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/about_self_input_field.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/cupertino.dart';
@@ -107,6 +107,7 @@ class _EditUserProfileState extends State<EditUserProfile> {
         aboutSelf = user['aboutSelf'];
         regionOfOperation = user['regionOfOperation'];
         specialities = user['specialities'];
+        dob = DateTime.parse(user['dob']);
       });
       getJsonData().then((v) {
         getSpecialitiesList(profession);
@@ -165,7 +166,7 @@ class _EditUserProfileState extends State<EditUserProfile> {
                                 child: CircleAvatar(
                                     radius: 80.0,
                                     backgroundImage: NetworkImage(
-                                        'http://192.168.0.108:3001/' +
+                                        'http://192.168.43.77:3001/' +
                                             user['profileImage']['medium'])),
                               ),
                               Positioned(
@@ -318,8 +319,8 @@ class _EditUserProfileState extends State<EditUserProfile> {
                     // ============================================================= specialities
                     isWorkMan
                         ? MultiDropDown(
-                            initialValue: [...specialities],
-                            items: [...specialityList],
+                            initialValue: specialities,
+                            items: specialityList,
                             cb: (List<dynamic> value) {
                               setState(() {
                                 specialities = value;
@@ -432,42 +433,13 @@ class _EditUserProfileState extends State<EditUserProfile> {
                         : SizedBox(),
                     // ============================================================== about yourself
                     isWorkMan
-                        ? TextFormField(
+                        ? AboutSelfInputField(
                             controller: _aboutSelfController,
-                            maxLines: 5,
-                            maxLength: 200,
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(200),
-                            ],
-                            style:
-                                TextStyle(color: Colors.blue, fontSize: 13.0),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 20.0, vertical: 10.0),
-                              hintText: 'About your self',
-                              hintStyle:
-                                  TextStyle(color: Colors.blue, fontSize: 13.0),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    20.0,
-                                  ),
-                                  borderSide: BorderSide(
-                                    color: Colors.blue[100],
-                                  )),
-                            ),
                             onChanged: (value) {
                               setState(() {
                                 aboutSelf = value;
                               });
                             },
-                            validator: isWorkMan
-                                ? (String value) {
-                                    if (value.isEmpty) {
-                                      return 'About yourself field is empty';
-                                    }
-                                    return null;
-                                  }
-                                : null,
                           )
                         : SizedBox(),
                     user['role'] == 'client'
@@ -593,18 +565,20 @@ class _EditUserProfileState extends State<EditUserProfile> {
                                     ))
                             : SizedBox()
                         : SizedBox(),
-                    SizedBox(
-                      height: 20.0,
-                    ),
+                    isWorkMan
+                        ? SizedBox(
+                            height: 20.0,
+                          )
+                        : SizedBox(),
                     RoundedButton(
                       onPressed: () {
-                        if (isWorkMan) {
+                        if (user['role'] != 'workman' && isWorkMan == true) {
                           if (idFrontImage != null && idFrontImage != null) {
                             _submit();
                           } else {
                             _showSnackBar('Missing ID images');
                           }
-                        } else if (!isWorkMan) {
+                        } else if (user['role'] == 'workman') {
                           _submit();
                         }
                       },

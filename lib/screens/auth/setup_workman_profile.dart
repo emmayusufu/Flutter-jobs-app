@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/input_field.dart';
-import 'package:workmannow/widgets/dropdown_search.dart';
-import 'package:workmannow/widgets/multi_dropdown_search.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
+import 'package:workmannow/screens/home/index.dart';
+import 'package:workmannow/widgets/input_fields/input_field.dart';
+import 'package:workmannow/widgets/input_fields/dropdown_search.dart';
+import 'package:workmannow/widgets/input_fields/multi_dropdown_search.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/about_self_input_field.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/cupertino.dart';
@@ -123,8 +125,8 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                           ),
                           child: CircleAvatar(
                               radius: 80.0,
-                              backgroundImage: idBackImage != null
-                                  ? FileImage(idBackImage)
+                              backgroundImage: profileImage != null
+                                  ? FileImage(profileImage)
                                   : AssetImage('assets/dp.png')),
                         ),
                         Positioned(
@@ -156,7 +158,6 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                     // ===================================================== first name
                     InputField(
                       labelText: 'First name',
-                      prefixIcon: Icon(Icons.person),
                       onChanged: (String value) {
                         setState(() {
                           firstName = value;
@@ -175,7 +176,6 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                     // ===================================================== last name
                     InputField(
                       labelText: 'Last name',
-                      prefixIcon: Icon(Icons.person),
                       onChanged: (String value) {
                         setState(() {
                           lastName = value;
@@ -194,7 +194,6 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                     // ===================================================== national identification number
                     InputField(
                       labelText: 'National Identification Card Number',
-                      prefixIcon: Icon(CupertinoIcons.creditcard),
                       onChanged: (String value) {
                         setState(() {
                           nin = value;
@@ -232,6 +231,7 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                         });
                       },
                       child: Container(
+                        height: 50.0,
                         decoration: BoxDecoration(
                             color: Colors.blue.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(30.0),
@@ -239,12 +239,8 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                                 Border.all(color: Colors.blue[100], width: 1)),
                         child: Row(
                           children: [
-                            Icon(
-                              CupertinoIcons.calendar,
-                              color: Colors.grey,
-                            ),
                             SizedBox(
-                              width: 5.0,
+                              width: 10.0,
                             ),
                             Text(
                               dob == null
@@ -326,7 +322,6 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                             mask: '999,999,999,999,999', reverse: true)
                       ],
                       labelText: 'Staring fee',
-                      prefixIcon: Icon(Icons.money),
                       onChanged: (value) {
                         setState(() {
                           startingFee = value;
@@ -343,26 +338,7 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                       height: 40.0,
                     ),
                     // ============================================================= about yourself
-                    TextFormField(
-                      maxLines: 5,
-                      maxLength: 200,
-                      inputFormatters: [
-                        new LengthLimitingTextInputFormatter(200),
-                      ],
-                      decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(top: 15.0),
-                          labelText: 'About your self',
-                          prefixIcon:
-                              Icon(CupertinoIcons.pen, color: Colors.blue),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                20.0,
-                              ),
-                              borderSide: BorderSide(
-                                color: Colors.blue[100],
-                              )),
-                          fillColor: Colors.blue.withOpacity(0.1),
-                          filled: true),
+                    AboutSelfInputField(
                       onChanged: (value) {
                         setState(() {
                           aboutSelf = value;
@@ -482,7 +458,15 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
                     RoundedButton(
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          _submit();
+                          if(idFrontImage!=null&&idBackImage!=null){
+                            if(profileImage!=null){
+                              _submit();
+                            }else {
+                              _showSnackBar('Missing a profile image');
+                            }
+                          } else {
+                            _showSnackBar('Missing an ID image');
+                          }
                         }
                       },
                       name: 'Submit',
@@ -502,7 +486,7 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
     if (pickedImage != null) {
       setState(() {
         if (pickedImage != null) {
-          idBackImage = File(pickedImage.path);
+          profileImage = File(pickedImage.path);
         }
       });
     }
@@ -570,7 +554,12 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
       if (message == 'success') {
         if (mounted) {
           await EasyLoading.dismiss();
-          Navigator.popAndPushNamed(_scaffoldKey.currentContext, '/home');
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (BuildContext context) => Home(),
+            ),
+                (Route route) => false,
+          );
         }
       } else {
         await EasyLoading.dismiss();

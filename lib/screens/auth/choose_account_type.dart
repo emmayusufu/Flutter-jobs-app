@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:workmannow/screens/auth/setup_client_profile.dart';
 import 'package:workmannow/screens/auth/setup_workman_profile.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
 
 class ChooseAccountType extends StatefulWidget {
   @override

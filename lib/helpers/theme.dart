@@ -37,7 +37,7 @@ class ThemeHelper {
     fontFamily: 'Quicksand',
     appBarTheme: AppBarTheme(
         color: Colors.white,
-        elevation: 0.0,
+        elevation: 0.5,
         iconTheme: IconThemeData(color: MyColors.blue),
         textTheme: TextTheme(
             headline6: TextStyle(

@@ -1,13 +1,14 @@
-import 'package:workmannow/screens/pending_hirings/index.dart';
+import 'package:workmannow/providers/socket.dart';
 import 'package:workmannow/providers/firebase.dart';
 import 'package:workmannow/helpers/theme.dart';
 import 'package:workmannow/screens/auth/login.dart';
 import 'package:workmannow/screens/auth/registration.dart';
-import 'package:workmannow/screens/enable_location/index.dart';
+import 'package:workmannow/screens/utility/enable_location.dart';
+import 'package:workmannow/screens/hiring/client.dart';
+import 'package:workmannow/screens/hiring/workMan.dart';
 import 'package:workmannow/screens/home/index.dart';
-import 'package:workmannow/screens/notification/index.dart';
 import 'package:workmannow/screens/profile/user.dart';
-import 'package:workmannow/screens/splash/index.dart';
+import 'package:workmannow/screens/utility/splash.dart';
 import 'package:workmannow/providers/location.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -61,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (context) => HiringProvider()),
           ChangeNotifierProvider(create: (context) => UserProvider()),
           ChangeNotifierProvider(create: (context) => LocationProvider()),
-          ChangeNotifierProvider(create: (context) => LocationProvider()),
+          ChangeNotifierProvider(create: (context) => SocketProvider()),
           ChangeNotifierProvider(
               create: (context) => FireBaseServiceProvider()),
         ],
@@ -85,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                       builder: (context, snapshot) {
                         Widget component = Scaffold(
                           body: Center(
-                            child: CircularProgressIndicator(),
+                            child: SplashScreen(),
                           ),
                         );
                         if (snapshot.connectionState ==
@@ -109,15 +110,15 @@ class _MyAppState extends State<MyApp> {
                         return component;
                       });
                 }
-                return CircularProgressIndicator();
+                return SplashScreen();
               },
             ),
             routes: {
               '/registration': (_) => Registration(),
               '/home': (_) => Home(),
               '/user_profile': (_) => UserProfile(),
-              '/notifications': (_) => Notifications(),
-              '/pending_hirings': (_) => PendingHirings(),
+              '/client_hirings': (_) => ClientHirings(),
+              '/workman_hirings': (_) => WorkManHirings(),
             },
             builder: EasyLoading.init(),
           );

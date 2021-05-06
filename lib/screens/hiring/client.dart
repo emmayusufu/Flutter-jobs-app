@@ -1,47 +1,33 @@
-import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/screens/hiring/hire_finished.dart';
-import 'package:workmannow/providers/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:workmannow/helpers/colors.dart';
+import 'package:workmannow/providers/user.dart';
+import 'package:workmannow/screens/hiring/hiring_finished.dart';
+import 'package:workmannow/widgets/modals/hiring_details.dart';
 
-class PendingHirings extends StatefulWidget {
+class ClientHirings extends StatefulWidget {
   @override
-  _PendingHiringsState createState() => _PendingHiringsState();
+  _ClientHiringsState createState() => _ClientHiringsState();
 }
 
-class _PendingHiringsState extends State<PendingHirings> {
-  CollectionReference hirings = FirebaseFirestore.instance.collection('users');
+class _ClientHiringsState extends State<ClientHirings> {
+  CollectionReference hirings =
+      FirebaseFirestore.instance.collection('hirings');
 
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
       builder: (context, authProvider, child) {
-        final user = authProvider.user;
+        Map<String, dynamic> user = authProvider.user;
         return Scaffold(
-          appBar: AppBar(
-            title: Text('Pending Hirings'),
-            bottom: PreferredSize(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(color: Colors.grey[300], width: 0.5)),
-                ),
-              ),
-              preferredSize: Size.zero,
-            ),
-          ),
           body: SafeArea(
               child: StreamBuilder<QuerySnapshot>(
             stream: hirings
-                .doc(user['_id'])
-                .collection('hirings')
-                .where("accepted", isEqualTo: true)
-                // .orderBy('createdAt', descending: true)
+                .where("clientId", isEqualTo: user['_id'])
+                .orderBy('createdAt', descending: true)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -78,8 +64,8 @@ class _PendingHiringsState extends State<PendingHirings> {
                                     topRight: Radius.circular(10.0))),
                             context: context,
                             builder: (context) {
-                              return UserContainer(
-                                user: message,
+                              return HiringDetailsModal(
+                                hiring: message,
                               );
                             });
                       },
@@ -111,7 +97,7 @@ class _PendingHiringsState extends State<PendingHirings> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Job decription',
+                                        'Job description',
                                         style: TextStyle(
                                           fontSize: 10.0,
                                           color: Colors.grey,
@@ -136,15 +122,20 @@ class _PendingHiringsState extends State<PendingHirings> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                FlatButton.icon(
-                                  height: 30.0,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
+                                TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    elevation: 2.0,
+                                    minimumSize: Size(80.0, 30.0),
+                                    primary: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    backgroundColor: Colors.green,
+                                  ),
                                   onPressed: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (_) {
-                                      return HireFinished(
+                                      return HiringFinished(
                                         docRef: message.reference.path,
                                       );
                                     }));
@@ -154,8 +145,6 @@ class _PendingHiringsState extends State<PendingHirings> {
                                     size: 15.0,
                                   ),
                                   label: Text('Completed'),
-                                  color: Colors.green,
-                                  textColor: Colors.white,
                                 ),
                               ],
                             ),
@@ -171,103 +160,5 @@ class _PendingHiringsState extends State<PendingHirings> {
         );
       },
     );
-  }
-}
-
-class UserContainer extends StatelessWidget {
-  final user;
-
-  UserContainer({this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(children: [
-        Container(
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border:
-                  Border.all(color: Colors.blue.withOpacity(0.1), width: 2.0)),
-          child: CircleAvatar(
-              radius: 65.0,
-              backgroundImage: NetworkImage(
-                user['clienImage'],
-              )),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-          title: Text(
-            user['clientName'],
-            style: TextStyle(
-                color: Colors.blueGrey,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.0),
-          ),
-          subtitle: Text(
-            'Client\'s name',
-            style: TextStyle(
-                fontSize: 10.0,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold),
-          ),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-          title: Text(
-            user['contact'],
-            style: TextStyle(
-                color: Colors.blueGrey,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.0),
-          ),
-          subtitle: Text(
-            'Client\'s contact',
-            style: TextStyle(
-                fontSize: 10.0,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold),
-          ),
-          trailing: CircleAvatar(
-            child: IconButton(
-              onPressed: () {
-                launch("tel:${user['contact']}");
-              },
-              splashRadius: 1.0,
-              icon: Icon(Icons.phone),
-            ),
-          ),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-          title: Text(
-            user['location'],
-            style: TextStyle(
-                color: Colors.blueGrey,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.0),
-          ),
-          subtitle: Text(
-            'Client\'s location',
-            style: TextStyle(
-                fontSize: 10.0,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold),
-          ),
-          trailing: CircleAvatar(
-            backgroundColor: Colors.red,
-            child: IconButton(
-              onPressed: () {},
-              splashRadius: 1.0,
-              icon: Icon(
-                Icons.location_on,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ]),
-    ));
   }
 }

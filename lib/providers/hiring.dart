@@ -1,40 +1,34 @@
-import 'dart:convert';
-import 'package:workmannow/classes/hiring/index.dart';
+import 'dart:convert' as convert;
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmannow/classes/hiring/index.dart';
 
 class HiringProvider extends ChangeNotifier {
-  final String url = "192.168.0.108:3001";
+  final String url = "192.168.43.77:3001";
 
-  Future<String> getCurrentUserID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userData = jsonDecode(prefs.getString('user'));
-    return userData['_id'];
-  }
-
-  Future<String> hireWorkMan(Hiring hireDetails) async {
+  Future<String> hireWorkMan(Hiring hiringDetails) async {
     String message;
     try {
-      var response = await http
-          .post(Uri.parse('https://$url/hire/${hireDetails.workManId}'), body: {
-        'clientID': hireDetails.clientId,
-        'description': hireDetails.jobDescription,
-        'clientName': hireDetails.clientName,
-        'location': hireDetails.location,
-        'contact': hireDetails.contact,
-        "clientImage": hireDetails.clientImage,
-        "geocodes": jsonEncode(hireDetails.geocodes)
+      var response =
+          await http.post(Uri.parse('http://$url/api/hire_workman'), body: {
+        'clientId': hiringDetails.clientId,
+        'workManId': hiringDetails.workManId,
+        'description': hiringDetails.jobDescription,
+        'clientName': hiringDetails.clientName,
+        'workManPhoneNumber': hiringDetails.workManPhoneNumber,
+        'clientPhoneNumber': hiringDetails.clientPhoneNumber,
+        "clientImage": hiringDetails.clientImage,
       });
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
         message = res['message'];
       } else {
+        message = "failed";
         print(response.statusCode);
       }
-    } catch (e) {
-      print('caught error : $e while hiring workman');
+    } on NoSuchMethodError catch (err) {
+      throw (err);
     }
     return message;
   }
@@ -43,12 +37,12 @@ class HiringProvider extends ChangeNotifier {
       {String documentRef, double workManRating, String review}) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('https://$url/complete_hiring'),
-          body: {
-            "docRef": documentRef,
-            "workManRating": workManRating,
-            "review": review
-          });
+      var response = await http
+          .post(Uri.parse('http://$url/api/complete_hiring'), body: {
+        "docRef": documentRef,
+        "workManRating": workManRating,
+        "review": review
+      });
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
         if (res['message'] == 'success') {
@@ -68,7 +62,7 @@ class HiringProvider extends ChangeNotifier {
   Future<String> acceptHire({documentRef}) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('https://$url/accept_hiring'),
+      var response = await http.post(Uri.parse('http://$url/api/accept_hiring'),
           body: {"docRef": documentRef});
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
@@ -89,7 +83,8 @@ class HiringProvider extends ChangeNotifier {
   Future<String> declineHire({documentRef}) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('https://$url/decline_hiring'),
+      var response = await http.post(
+          Uri.parse('http://$url/api/decline_hiring'),
           body: {"docRef": documentRef});
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
@@ -99,7 +94,7 @@ class HiringProvider extends ChangeNotifier {
           message = res['message'];
         }
       } else {
-        print(response.statusCode);
+        throw (response.statusCode);
       }
     } catch (e) {
       print('caught error : $e while declining hire');

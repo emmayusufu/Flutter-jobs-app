@@ -1,4 +1,4 @@
-import 'package:workmannow/widgets/chip.dart';
+import 'package:workmannow/widgets/utils/chip.dart';
 import 'package:flutter/material.dart';
 import 'package:recase/recase.dart';
 

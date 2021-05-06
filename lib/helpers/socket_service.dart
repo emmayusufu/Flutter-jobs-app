@@ -6,22 +6,22 @@ import 'dart:convert';
 class SocketService {
   final locationService = new Location();
 
-  Future<String> getCurrentUserID() async {
+  Future<String> getCurrentUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userData = jsonDecode(prefs.getString('user'));
     return userData['_id'];
   }
 
   Future<Socket> createSocketConnection() async {
-    var userID = await getCurrentUserID();
+    var userId = await getCurrentUserId();
     Socket socket;
-    if (userID != null) {
+    if (userId != null) {
       socket = io('https://c82da11f199e.ngrok.io', <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
         'extraHeaders': {
           'user': jsonEncode({
-            'id': '$userID',
+            'id': '$userId',
           })
         }
       });

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:workmannow/screens/auth/login.dart';
 import 'package:workmannow/screens/profile/edit.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/chip_list.dart';
+import 'package:workmannow/widgets/utils/chip_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -43,15 +43,6 @@ class _UserProfileState extends State<UserProfile> {
           title: Text(
             'My profile',
           ),
-          bottom: PreferredSize(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                    top: BorderSide(color: Colors.grey[300], width: 0.5)),
-              ),
-            ),
-            preferredSize: Size.zero,
-          ),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -76,7 +67,7 @@ class _UserProfileState extends State<UserProfile> {
                               radius: 50.0,
                               backgroundImage: user['profileImage'] != null
                                   ? NetworkImage(
-                                      'http://192.168.0.108:3001/' +
+                                      'http://192.168.43.77:3001/' +
                                           user['profileImage']['small'],
                                     )
                                   : AssetImage('assets/dp.png')),
@@ -102,6 +93,7 @@ class _UserProfileState extends State<UserProfile> {
                                     user['profession'],
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
+                                        fontSize:10.0,
                                         color: Colors.grey),
                                   )
                                 : SizedBox(),
@@ -114,6 +106,7 @@ class _UserProfileState extends State<UserProfile> {
                               user['phoneNumber'],
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  fontSize:10.0,
                                   color: Colors.grey),
                             ),
                             SizedBox(
@@ -123,6 +116,7 @@ class _UserProfileState extends State<UserProfile> {
                               user['email'],
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  fontSize:12.0,
                                   color: Colors.grey),
                             ),
                           ],
@@ -279,7 +273,7 @@ class _UserProfileState extends State<UserProfile> {
                                   height: 5.0,
                                 ),
                                 ChipList(
-                                  list: [...user['specialities']],
+                                  list: user['specialities'],
                                 ),
                               ],
                             ),
@@ -301,14 +295,14 @@ class _UserProfileState extends State<UserProfile> {
                       color: Colors.red,
                     ),
                     title: Text('Logout'),
-                    onTap: () {
+                    onTap: () async {
                       Navigator.of(context).pushAndRemoveUntil(
-                        // the new route
                         MaterialPageRoute(
                           builder: (BuildContext context) => Login(),
                         ),
                         (Route route) => false,
                       );
+                      await userProvider.logout();
                     },
                   ),
                 )

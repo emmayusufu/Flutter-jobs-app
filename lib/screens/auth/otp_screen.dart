@@ -8,7 +8,7 @@ import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/screens/auth/choose_account_type.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
 
 class OTPScreen extends StatefulWidget {
   final String phoneNumber;

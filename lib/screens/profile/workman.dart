@@ -1,8 +1,6 @@
 import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/widgets/chip_list.dart';
-import 'package:workmannow/widgets/hire_button.dart';
-import 'package:workmannow/widgets/job_card.dart';
-import 'package:workmannow/widgets/user_card.dart';
+import 'package:workmannow/widgets/utils/chip_list.dart';
+import 'package:workmannow/widgets/buttons/hire_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:recase/recase.dart';
@@ -47,15 +45,6 @@ class ProfileScreen extends StatelessWidget {
           'Workman Profile',
           style: TextStyle(color: MyColors.blue),
         ),
-        bottom: PreferredSize(
-          child: Container(
-            decoration: BoxDecoration(
-              border:
-                  Border(top: BorderSide(color: Colors.grey[300], width: 0.5)),
-            ),
-          ),
-          preferredSize: Size.zero,
-        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -81,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                           child: CircleAvatar(
                               radius: 50.0,
                               backgroundImage: workMan['profileImage'] != null
-                                  ? NetworkImage('http://192.168.0.108:3001/'+
+                                  ? NetworkImage('http://192.168.43.77:3001/'+
                                       workMan['profileImage']['small'],
                                     )
                                   : AssetImage('assets/dp.png')),
@@ -104,6 +93,7 @@ class ProfileScreen extends StatelessWidget {
                               '${workMan['profession']}'.sentenceCase,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  fontSize:10.0,
                                   color: Colors.grey),
                             ),
                           ],
@@ -220,9 +210,9 @@ class ProfileScreen extends StatelessWidget {
                         SizedBox(
                           height: 5.0,
                         ),
-                        // ChipList(
-                        //   list: workMan['specialities'],
-                        // ),
+                        ChipList(
+                          list: workMan['specialities'],
+                        ),
                       ],
                     ),
                   ),

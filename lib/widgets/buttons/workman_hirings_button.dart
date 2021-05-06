@@ -1,29 +1,26 @@
-import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/providers/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:workmannow/providers/user.dart';
 
-class NotificationButton extends StatefulWidget {
+class WorkManHiringsButton extends StatefulWidget {
   @override
-  _NotificationButtonState createState() => _NotificationButtonState();
+  _WorkManHiringsButtonState createState() => _WorkManHiringsButtonState();
 }
 
-class _NotificationButtonState extends State<NotificationButton> {
+class _WorkManHiringsButtonState extends State<WorkManHiringsButton> {
   CollectionReference hirings = FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
-      builder: (context, authProvider, child) {
-        final user = authProvider.user;
+      builder: (context, userProvider, child) {
+        final user = userProvider.user;
         return StreamBuilder<QuerySnapshot>(
             stream: hirings
                 .doc(user['_id'])
                 .collection('hirings')
-                // .orderBy('createdAt', descending: true)
                 .where("accepted", isEqualTo: false)
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -49,6 +46,7 @@ class _NotificationButtonState extends State<NotificationButton> {
 
 class NewWidget extends StatelessWidget {
   final int count;
+
   const NewWidget({Key key, this.count}) : super(key: key);
 
   @override
@@ -59,7 +57,7 @@ class NewWidget extends StatelessWidget {
             splashRadius: 1.0,
             icon: Icon(CupertinoIcons.bell_solid),
             onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
+              Navigator.pushNamed(context, '/workman_hirings');
             }),
         new Positioned(
           right: 12,

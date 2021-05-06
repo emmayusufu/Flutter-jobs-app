@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PendingButton extends StatefulWidget {
+class ClientHiringsButton extends StatefulWidget {
   @override
-  _PendingButtonState createState() => _PendingButtonState();
+  _ClientHiringsButtonState createState() => _ClientHiringsButtonState();
 }
 
-class _PendingButtonState extends State<PendingButton> {
+class _ClientHiringsButtonState extends State<ClientHiringsButton> {
   CollectionReference hirings = FirebaseFirestore.instance.collection('users');
 
   @override
@@ -58,7 +58,7 @@ class NewWidget extends StatelessWidget {
             splashRadius: 1.0,
             icon: Icon(CupertinoIcons.clock_fill),
             onPressed: () {
-              Navigator.pushNamed(context, '/pending_hirings');
+              Navigator.pushNamed(context, '/client_hirings');
             }),
         new Positioned(
           right: 12,

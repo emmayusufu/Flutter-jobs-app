@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:workmannow/helpers/colors.dart';
 
 class RoundedButton extends StatelessWidget {
   final Function onPressed;
@@ -10,13 +9,13 @@ class RoundedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        style: TextButton.styleFrom(
-          backgroundColor: MyColors.blue,
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 3.0,
           minimumSize: Size(200.0, 45.0),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
-              side: BorderSide(color: Colors.grey[200], width: 2.0)),
+          ),
         ),
         onPressed: onPressed,
         child: Text(

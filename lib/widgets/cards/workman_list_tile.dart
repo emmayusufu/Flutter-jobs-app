@@ -1,11 +1,11 @@
 import 'package:workmannow/screens/profile/workman.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:workmannow/widgets/hire_button.dart';
-import 'package:workmannow/widgets/rating.dart';
+import 'package:workmannow/widgets/buttons/hire_button.dart';
+import 'package:workmannow/widgets/utils/rating.dart';
 import 'package:recase/recase.dart';
 
-class WorkManTile extends StatelessWidget {
+class WorkManListTile extends StatelessWidget {
   final String image;
   final String name;
   final String about;
@@ -14,7 +14,7 @@ class WorkManTile extends StatelessWidget {
   final String profession;
   final workMan;
 
-  WorkManTile(
+  WorkManListTile(
       {@required this.name,
       @required this.image,
       @required this.about,
@@ -60,7 +60,7 @@ class WorkManTile extends StatelessWidget {
                         child: image != null
                             ? FadeInImage.assetNetwork(
                                 placeholder: 'assets/dp.png',
-                                image: 'http://192.168.0.108:3001/$image',
+                                image: 'http://192.168.43.77:3001/$image',
                                 fit: BoxFit.cover,
                               )
                             : Image.asset('assets/dp.png'),

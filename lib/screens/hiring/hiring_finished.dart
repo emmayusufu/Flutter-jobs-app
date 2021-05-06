@@ -1,5 +1,5 @@
 import 'package:workmannow/providers/hiring.dart';
-import 'package:workmannow/widgets/rounded_button.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,16 +7,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
-class HireFinished extends StatefulWidget {
+class HiringFinished extends StatefulWidget {
   final String docRef;
 
-  HireFinished({@required this.docRef});
+  HiringFinished({@required this.docRef});
 
   @override
-  _HireFinishedState createState() => _HireFinishedState();
+  _HiringFinishedState createState() => _HiringFinishedState();
 }
 
-class _HireFinishedState extends State<HireFinished> {
+class _HiringFinishedState extends State<HiringFinished> {
   double rating = 0.0;
   String review;
 
