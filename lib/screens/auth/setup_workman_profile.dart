@@ -551,23 +551,28 @@ class _SetupWorkManProfileState extends State<SetupWorkManProfile> {
             startingFee: startingFee,
             aboutSelf: aboutSelf))
         .then((String message) async {
-      if (message == 'success') {
-        if (mounted) {
-          await EasyLoading.dismiss();
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (BuildContext context) => Home(),
-            ),
-                (Route route) => false,
-          );
-        }
-      } else {
-        await EasyLoading.dismiss();
-        _showSnackBar('Something went wrong');
-      }
-    }).catchError((e) async {
+          switch(message){
+            case 'success':{
+              if (mounted) {
+                await EasyLoading.dismiss();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Home(),
+                  ),
+                      (Route route) => false,
+                );
+              }
+            }
+            break;
+            default : {
+              await EasyLoading.dismiss();
+              _showSnackBar('Something went wrong');
+            }
+            break;
+          }
+    }).catchError((err) async {
       await EasyLoading.dismiss();
-      print('caught error : $e');
+      throw(err);
     });
   }
 }

@@ -1,4 +1,6 @@
+import 'package:provider/provider.dart';
 import 'package:workmannow/helpers/colors.dart';
+import 'package:workmannow/providers/user.dart';
 import 'package:workmannow/widgets/utils/chip_list.dart';
 import 'package:workmannow/widgets/buttons/hire_button.dart';
 import 'package:flutter/foundation.dart';
@@ -10,31 +12,52 @@ class ProfileScreen extends StatelessWidget {
   ProfileScreen({@required this.workMan});
   @override
   Widget build(BuildContext context) {
-    // Widget similarWorkmenGridList = new Container(
-    //     margin: EdgeInsets.symmetric(vertical: 20.0),
-    //     height: 200.0,
-    //     child: new ListView(
-    //       scrollDirection: Axis.horizontal,
-    //       children: <Widget>[
-    //         UserCard(),
-    //         UserCard(),
-    //         UserCard(),
-    //         UserCard(),
-    //         UserCard(),
-    //       ],
-    //     ));
+    Widget similarWorkmenGridList = new Container(
+        margin: EdgeInsets.symmetric(vertical: 20.0),
+        height: 200.0,
+        child: FutureBuilder(
+            future: Provider.of<UserProvider>(context,listen:false).fetchUsers(limit: 5, role: "workman"),
+            builder: (BuildContext context, AsyncSnapshot snapshot){
+              Widget container;
+              if(snapshot.connectionState == ConnectionState.waiting){
+                container = Center(child: CircularProgressIndicator(),);
+              }else if(snapshot.hasError){
+                container = Center(child: Text('Something went wrong'),);
+              } else if(snapshot.hasData){
+                if(snapshot.data.length>0){
+                  container = ListView.builder(itemCount: snapshot.data.length,itemBuilder: (context, index){
+                    return ;
+                  });
+                } else if(snapshot.data.length==0){
+                  container = Center(child: Text('No similar workmen'),);
+                }
+              }
+          return container;
+        }),
+    );
     //
-    // Widget finishedJobsGridList = new Container(
-    //     height: 80.0,
-    //     child: new ListView(
-    //       scrollDirection: Axis.horizontal,
-    //       children: <Widget>[
-    //         JobCard(),
-    //         JobCard(),
-    //         JobCard(),
-    //         JobCard(),
-    //       ],
-    //     ));
+    Widget finishedJobsGridList = new Container(
+        height: 80.0,
+      child: FutureBuilder(
+          future: Provider.of<UserProvider>(context,listen:false).fetchUsers(limit: 5, role: "workman"),
+          builder: (BuildContext context, AsyncSnapshot snapshot){
+            Widget container;
+            if(snapshot.connectionState == ConnectionState.waiting){
+              container = Center(child: CircularProgressIndicator(),);
+            }else if(snapshot.hasError){
+              container = Center(child: Text('Something went wrong'),);
+            } else if(snapshot.hasData){
+              if(snapshot.data.length>0){
+                container = ListView.builder(itemCount: snapshot.data.length,itemBuilder: (context, index){
+                  return ;
+                });
+              } else if(snapshot.data.length==0){
+                container = Center(child: Text('No similar workmen'),);
+              }
+            }
+            return container;
+          }),
+    );
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -248,7 +271,7 @@ class ProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 10.0,
                 ),
-                Text('Finished Jobs',
+                Text('Finished hirings',
                     style: TextStyle(
                         color: Colors.blueGrey,
                         fontWeight: FontWeight.bold,

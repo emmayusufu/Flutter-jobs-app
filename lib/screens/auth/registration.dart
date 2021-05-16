@@ -6,13 +6,13 @@ import 'package:intl_phone_field/phone_number.dart';
 import 'package:provider/provider.dart';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/screens/auth/terms_of_service.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/input_fields/input_field.dart';
-import 'package:workmannow/widgets/input_fields/phone_input_field.dart';
-import 'package:workmannow/widgets/buttons/rounded_button.dart';
 import 'package:workmannow/screens/auth/otp_screen.dart';
+import 'package:workmannow/screens/auth/terms_of_service.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/input_field.dart';
 import 'package:workmannow/widgets/input_fields/password_input_field.dart';
+import 'package:workmannow/widgets/input_fields/phone_input_field.dart';
 
 class Registration extends StatefulWidget {
   @override
@@ -151,28 +151,38 @@ class _RegistrationState extends State<Registration> {
           size: 50.0,
         ));
     Provider.of<UserProvider>(context, listen: false)
-        .register(User(
-            email: email, password: password, phoneNumber: phoneNumber))
+        .register(
+            User(email: email, password: password, phoneNumber: phoneNumber))
         .then((String message) async {
-      if (message == 'success') {
-        if (mounted) {
-          await EasyLoading.dismiss();
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (_) => OTPScreen(
-                    phoneNumber: phoneNumber,
-                  )));
-        }
-      } else if (message == 'phone_number_already_number_exists') {
-        await EasyLoading.dismiss();
-        _showSnackBar('Phone number already exists');
-      } else {
-        await EasyLoading.dismiss();
-        _showSnackBar('Something went wrong');
+      switch (message) {
+        case 'success':
+          {
+            if (mounted) {
+              await EasyLoading.dismiss();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (_) => OTPScreen(
+                        phoneNumber: phoneNumber,
+                      )));
+            }
+          }
+          break;
+        case 'phone_number_already_number_exists':
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Phone number already exists');
+          }
+          break;
+        default:
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Something went wrong');
+          }
+          break;
       }
-    }).catchError((e) async {
+    }).catchError((err) async {
       await EasyLoading.dismiss();
       {
-        print('caught error $e');
+        throw (err);
       }
     });
   }

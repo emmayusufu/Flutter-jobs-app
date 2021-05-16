@@ -1,58 +1,61 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/providers/hiring.dart';
 import 'package:workmannow/providers/user.dart';
+import 'package:workmannow/screens/hiring/hiring_finished.dart';
 import 'package:workmannow/widgets/modals/hiring_details.dart';
 
-class WorkManHirings extends StatefulWidget {
+class ClientHirings extends StatefulWidget {
   @override
-  _WorkManHiringsState createState() => _WorkManHiringsState();
+  _ClientHiringsState createState() => _ClientHiringsState();
 }
 
-class _WorkManHiringsState extends State<WorkManHirings> {
+class _ClientHiringsState extends State<ClientHirings> {
   CollectionReference hirings =
-      FirebaseFirestore.instance.collection('hirings');
+  FirebaseFirestore.instance.collection('hirings');
 
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
-        Map<String, dynamic> user = userProvider.user;
+      builder: (context, authProvider, child) {
+        Map<String, dynamic> user = authProvider.user;
         return Scaffold(
+          appBar: AppBar(
+            title:Text('Client Hirings')
+          ),
           body: SafeArea(
-              child: StreamBuilder(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: hirings
+                    .where("clientId", isEqualTo: user['_id'])
                     .orderBy('createdAt', descending: true)
-                    .where("workManId", isEqualTo: user['_id'])
                     .snapshots(),
                 builder:
-                    (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return Center(child: Text('Something went wrong'));
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
-                        child: SpinKitPouringHourglass(
+                        child: SpinKitFadingCircle(
                           color: MyColors.blue,
                           size: 50.0,
                         ));
                   }
                   if (snapshot.data.docs.length == 0) {
                     return Center(
-                      child: Text('You have no new hirings'),
+                      child: Text('You have no ongoing hirings'),
                     );
                   }
                   return ListView.builder(
                     reverse: true,
                     itemCount: snapshot.data.docs.length,
                     itemBuilder: (context, index) {
-                      var hiring = snapshot.data.docs[index];
+                      final message = snapshot.data.docs[index];
                       return Card(
                         child: InkWell(
                           customBorder: RoundedRectangleBorder(
@@ -66,7 +69,7 @@ class _WorkManHiringsState extends State<WorkManHirings> {
                                 context: context,
                                 builder: (context) {
                                   return HiringDetailsModal(
-                                    hiring: snapshot.data.docs[index],
+                                    hiring: message,
                                   );
                                 });
                           },
@@ -77,7 +80,10 @@ class _WorkManHiringsState extends State<WorkManHirings> {
                                 Row(
                                   children: [
                                     Text(
-                                      '${DateFormat.yMMMEd().add_jms().format(DateTime.fromMillisecondsSinceEpoch(hiring['createdAt']).toLocal())}',
+                                      '${DateFormat.yMMMEd().add_jms().format(
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              message['createdAt'])
+                                              .toLocal())}',
                                       style: TextStyle(
                                           color: Colors.grey,
                                           fontWeight: FontWeight.bold,
@@ -93,7 +99,8 @@ class _WorkManHiringsState extends State<WorkManHirings> {
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .start,
                                         crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                         children: [
@@ -106,7 +113,7 @@ class _WorkManHiringsState extends State<WorkManHirings> {
                                             ),
                                           ),
                                           Text(
-                                            hiring['description'],
+                                            message['description'],
                                             style: TextStyle(
                                                 color: Colors.blueGrey,
                                                 fontWeight: FontWeight.bold,
@@ -121,12 +128,12 @@ class _WorkManHiringsState extends State<WorkManHirings> {
                                   height: 20.0,
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton.icon(
                                       style: TextButton.styleFrom(
                                         elevation: 2.0,
-                                        minimumSize: Size(60.0, 30.0),
+                                        minimumSize: Size(80.0, 30.0),
                                         primary: Colors.white,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -134,38 +141,18 @@ class _WorkManHiringsState extends State<WorkManHirings> {
                                         backgroundColor: Colors.green,
                                       ),
                                       onPressed: () {
-                                        Provider.of<HiringProvider>(context,
-                                            listen: false)
-                                            .acceptHire(
-                                            documentRef: hiring.reference.path);
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (_) {
+                                              return HiringFinished(
+                                                docRef: message.reference.path,
+                                              );
+                                            }));
                                       },
                                       icon: Icon(
                                         Icons.check,
                                         size: 15.0,
                                       ),
-                                      label: Text('Accept'),
-                                    ),
-                                    TextButton.icon(
-                                      icon: Icon(
-                                        CupertinoIcons.clear,
-                                        size: 15.0,
-                                      ),
-                                      style: TextButton.styleFrom(
-                                        elevation: 2.0,
-                                        primary: Colors.white,
-                                        minimumSize: Size(60.0, 30.0),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        Provider.of<HiringProvider>(context,
-                                            listen: false)
-                                            .declineHire(
-                                            documentRef: hiring.reference.path);
-                                      },
-                                      label: Text('Decline'),
+                                      label: Text('Completed'),
                                     ),
                                   ],
                                 ),

@@ -10,7 +10,7 @@ class HiringProvider extends ChangeNotifier {
   Future<String> hireWorkMan(Hiring hiringDetails) async {
     String message;
     try {
-      var response =
+      http.Response response =
           await http.post(Uri.parse('http://$url/api/hire_workman'), body: {
         'clientId': hiringDetails.clientId,
         'workManId': hiringDetails.workManId,
@@ -37,7 +37,7 @@ class HiringProvider extends ChangeNotifier {
       {String documentRef, double workManRating, String review}) async {
     String message;
     try {
-      var response = await http
+      http.Response response = await http
           .post(Uri.parse('http://$url/api/complete_hiring'), body: {
         "docRef": documentRef,
         "workManRating": workManRating,
@@ -53,8 +53,8 @@ class HiringProvider extends ChangeNotifier {
       } else {
         print(response.statusCode);
       }
-    } catch (e) {
-      print('caught error : $e while accepting hire');
+    } catch (err) {
+      throw(err);
     }
     return message;
   }
@@ -62,7 +62,8 @@ class HiringProvider extends ChangeNotifier {
   Future<String> acceptHire({documentRef}) async {
     String message;
     try {
-      var response = await http.post(Uri.parse('http://$url/api/accept_hiring'),
+      http.Response response = await http.post(
+          Uri.parse('http://$url/api/accept_hiring'),
           body: {"docRef": documentRef});
       if (response.statusCode == 200) {
         Map res = convert.jsonDecode(response.body);
@@ -74,13 +75,13 @@ class HiringProvider extends ChangeNotifier {
       } else {
         print(response.statusCode);
       }
-    } catch (e) {
-      print('caught error : $e while accepting hire');
+    } catch (err) {
+      throw(err)      ;
     }
     return message;
   }
 
-  Future<String> declineHire({documentRef}) async {
+  Future<String> declineHire({String documentRef}) async {
     String message;
     try {
       var response = await http.post(
@@ -96,9 +97,44 @@ class HiringProvider extends ChangeNotifier {
       } else {
         throw (response.statusCode);
       }
-    } catch (e) {
-      print('caught error : $e while declining hire');
+    } catch (err) {
+      throw (err);
     }
     return message;
+  }
+
+  Future<String> cancelHiring({String documentRef, String clientId}) async {
+    String message;
+    try {
+      http.Response response = await http.post(
+          Uri.parse('http://$url/api/decline_hiring'),
+          body: {"docRef": documentRef, "clientId": clientId});
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseBody = convert.jsonDecode(response.body);
+        message = responseBody['message'];
+      } else {
+        print(response.statusCode);
+      }
+    } catch (err) {
+      throw (err);
+    }
+    return message;
+  }
+
+  Future<List> getHirings({String clientId,int limit,String workManId}) async {
+    List hirings;
+    try {
+      http.Response response =
+          await http.get(Uri.parse('http://$url/api/hirings?clientId=$clientId&limit=$limit&workManId=$workManId'));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> body = convert.jsonDecode(response.body);
+        hirings = body['hirings'];
+      } else {
+        throw (response.statusCode);
+      }
+    } catch (err) {
+      throw (err);
+    }
+    return hirings;
   }
 }

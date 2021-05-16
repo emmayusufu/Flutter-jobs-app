@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmannow/classes/user/index.dart';
@@ -180,23 +181,24 @@ class UserProvider extends ChangeNotifier {
     return message;
   }
 
-  Future<List> fetchAllWorkMen() async {
+  Future<List> fetchUsers(
+      {@required int limit, String profession, @required String role}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userData = jsonDecode(prefs.getString('user'));
     final userId = userData['_id'];
-    List workmen;
+    List users;
     try {
-      var response = await http.get(Uri.parse(
-          'http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession,phoneNumber,specialities,&role=workman&userId=$userId'));
+      http.Response response = await http.get(Uri.parse(
+          'http://$url/api/users?fields=firstName,lastName,rating,profileImage,aboutSelf,startingFee,profession,phoneNumber,specialities,&role=$role&userId=$userId&limit=$limit&profession=$profession'));
       if (response.statusCode == 200) {
-        workmen = jsonDecode(response.body)['users'];
+        users = jsonDecode(response.body)['users'];
       } else {
         print(response.statusCode);
       }
-    } catch (e) {
-      print('caught error : $e while fetching all workmen');
+    } catch (err) {
+      throw (err);
     }
-    return workmen;
+    return users;
   }
 
   // ==================================================================================== future function for updating user profile

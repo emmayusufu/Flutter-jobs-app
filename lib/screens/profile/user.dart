@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:workmannow/providers/hiring.dart';
 import 'package:workmannow/screens/auth/login.dart';
 import 'package:workmannow/screens/profile/edit.dart';
 import 'package:workmannow/providers/user.dart';
@@ -36,7 +37,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(builder: (context, userProvider, child) {
+    return Consumer2<UserProvider,HiringProvider>(builder: (context, userProvider,hiringProvider,child) {
       var user = userProvider.user;
       return Scaffold(
         appBar: AppBar(
@@ -281,6 +282,39 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                       )
                     : SizedBox(),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Text('Previous hirings',
+                    style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0)),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  height: 80.0,
+                  child: FutureBuilder(
+                      future: hiringProvider.getHirings(clientId: user['_id']),
+                      builder: (BuildContext context, AsyncSnapshot snapshot){
+                        Widget container;
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          container = Center(child: CircularProgressIndicator(),);
+                        }else if(snapshot.hasError){
+                          container = Center(child: Text('Something went wrong'),);
+                        } else if(snapshot.hasData){
+                          if(snapshot.data.length>0){
+                            container = ListView.builder(itemCount: snapshot.data.length,itemBuilder: (context, index){
+                              return ;
+                            });
+                          } else if(snapshot.data.length==0){
+                            container = Center(child: Text('No previous hirings'),);
+                          }
+                        }
+                        return container;
+                      }),
+                ),
                 SizedBox(
                   height: 10.0,
                 ),

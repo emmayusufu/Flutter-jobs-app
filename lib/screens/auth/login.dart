@@ -9,9 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
+import 'package:workmannow/widgets/buttons/rounded_button.dart';
 import 'package:workmannow/widgets/input_fields/password_input_field.dart';
 import 'package:workmannow/widgets/input_fields/phone_input_field.dart';
-import 'package:workmannow/widgets/buttons/rounded_button.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -141,27 +141,43 @@ class _LoginState extends State<Login> {
     Provider.of<UserProvider>(_scaffoldKey.currentContext, listen: false)
         .login(User(phoneNumber: phoneNumber, password: password))
         .then((String message) async {
-      if (message == 'success') {
-        if (mounted) {
-          await EasyLoading.dismiss();
-          Navigator.popAndPushNamed(_scaffoldKey.currentContext, '/home');
-        }
-      } else if (message == 'user_not_found') {
-        await EasyLoading.dismiss();
-        _showSnackBar('Phone number not registered');
-      } else if (message == 'account_not_valid') {
-        await EasyLoading.dismiss();
-        _showSnackBar('Account has not been validated');
-      } else if (message == 'wrong_password') {
-        await EasyLoading.dismiss();
-        _showSnackBar('A wrong password was entered');
-      } else {
-        await EasyLoading.dismiss();
-        _showSnackBar('Something went wrong');
+      switch (message) {
+        case 'success':
+          {
+            if (mounted) {
+              await EasyLoading.dismiss();
+              Navigator.popAndPushNamed(_scaffoldKey.currentContext, '/home');
+            }
+          }
+          break;
+        case 'user_not_found':
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Phone number not registered');
+          }
+          break;
+        case 'account_not_valid':
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Account has not been validated');
+          }
+          break;
+        case 'wrong_password':
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('A wrong password was entered');
+          }
+          break;
+        default:
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Something went wrong');
+          }
+          break;
       }
-    }).catchError((e) async {
+    }).catchError((err) async {
       await EasyLoading.dismiss();
-      print('caught error : $e');
+      throw (err);
     });
   }
 

@@ -9,8 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
 import 'package:workmannow/providers/user.dart';
-import 'package:workmannow/widgets/input_fields/input_field.dart';
+import 'package:workmannow/screens/home/index.dart';
 import 'package:workmannow/widgets/buttons/rounded_button.dart';
+import 'package:workmannow/widgets/input_fields/input_field.dart';
 
 class SetUpClientProfile extends StatefulWidget {
   @override
@@ -181,18 +182,30 @@ class _SetUpClientProfileState extends State<SetUpClientProfile> {
             firstName: firstName,
             lastName: lastName))
         .then((String message) async {
-      if (message == 'success') {
-        if (mounted) {
-          await EasyLoading.dismiss();
-          Navigator.popAndPushNamed(_scaffoldKey.currentContext, '/home');
-        }
-      } else {
-        await EasyLoading.dismiss();
-        _showSnackBar('Something went wrong');
+      switch (message) {
+        case 'success':
+          {
+            if (mounted) {
+              await EasyLoading.dismiss();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => Home(),
+                ),
+                (Route route) => false,
+              );
+            }
+          }
+          break;
+        default:
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Something went wrong');
+          }
+          break;
       }
-    }).catchError((e) async {
+    }).catchError((err) async {
       await EasyLoading.dismiss();
-      print('caught error : $e');
+      throw (err);
     });
   }
 }

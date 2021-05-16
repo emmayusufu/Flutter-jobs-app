@@ -6,8 +6,8 @@ import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'package:provider/provider.dart';
 import 'package:workmannow/classes/user/index.dart';
 import 'package:workmannow/helpers/colors.dart';
-import 'package:workmannow/screens/auth/choose_account_type.dart';
 import 'package:workmannow/providers/user.dart';
+import 'package:workmannow/screens/auth/choose_account_type.dart';
 import 'package:workmannow/widgets/buttons/rounded_button.dart';
 
 class OTPScreen extends StatefulWidget {
@@ -143,22 +143,32 @@ class _OTPScreenState extends State<OTPScreen> {
     Provider.of<UserProvider>(context, listen: false)
         .verifyOtp(User(phoneNumber: widget.phoneNumber, otp: otp))
         .then((String message) async {
-      if (message == 'success') {
-        if (mounted) {
-          await EasyLoading.dismiss();
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => ChooseAccountType()));
-        }
-      } else if (message == 'wrong_otp') {
-        await EasyLoading.dismiss();
-        _showSnackBar('Entered a wrong OTP');
-      } else {
-        await EasyLoading.dismiss();
-        _showSnackBar('Something went wrong');
+      switch (message) {
+        case 'success':
+          {
+            if (mounted) {
+              await EasyLoading.dismiss();
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => ChooseAccountType()));
+            }
+          }
+          break;
+        case 'wrong_otp':
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Entered a wrong OTP');
+          }
+          break;
+        default:
+          {
+            await EasyLoading.dismiss();
+            _showSnackBar('Something went wrong');
+          }
+          break;
       }
-    }).catchError((e) async {
+    }).catchError((err) async {
       await EasyLoading.dismiss();
-      print('caught error $e');
+      throw (err);
     });
   }
 }

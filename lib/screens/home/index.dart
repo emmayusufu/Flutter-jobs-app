@@ -93,7 +93,7 @@ class _HomeState extends State<Home> {
               preferredSize: Size.fromHeight(50.0)),
         ),
         body: FutureBuilder(
-            future: userProvider.fetchAllWorkMen(),
+            future: userProvider.fetchUsers(limit: 10,role: 'workman'),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               Widget component;
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -175,11 +175,11 @@ class _HomeState extends State<Home> {
                   }
                 } else if (snapshot.hasError) {
                   component = Center(
-                    child: Text('An error occurred while fetching data'),
+                    child: Text('Something went wrong'),
                   );
                 } else if (!snapshot.hasData) {
                   component = Center(
-                    child: Text('No data was returned'),
+                    child: Text('Something went wrong'),
                   );
                 }
               }

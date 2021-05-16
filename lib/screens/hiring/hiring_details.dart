@@ -70,7 +70,7 @@ class _HiringDetailsState extends State<HiringDetails> {
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: MyColors.blue),
             title: Text(
-              'Workman profile',
+              'Hire details',
               style: TextStyle(color: MyColors.blue),
             ),
           ),

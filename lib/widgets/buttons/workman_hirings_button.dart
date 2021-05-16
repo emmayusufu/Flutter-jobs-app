@@ -55,7 +55,7 @@ class NewWidget extends StatelessWidget {
       children: [
         IconButton(
             splashRadius: 1.0,
-            icon: Icon(CupertinoIcons.bell_solid),
+            icon: Icon(CupertinoIcons.bell),
             onPressed: () {
               Navigator.pushNamed(context, '/workman_hirings');
             }),

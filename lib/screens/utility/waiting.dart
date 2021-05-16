@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+import 'package:workmannow/providers/hiring.dart';
 
 class Waiting extends StatefulWidget {
   @override
@@ -29,19 +31,19 @@ class _WaitingState extends State<Waiting> {
                 ),
                 actions: _message == "timeOut"
                     ? <Widget>[
-                        FlatButton(
+                        TextButton(
                             child: Text('No'),
                             onPressed: () {
                               Navigator.of(context).pushNamed('/home');
                             }),
-                        FlatButton(
+                        TextButton(
                             child: Text('Yes'),
                             onPressed: () {
                               Navigator.of(context).pushNamed('/home');
                             }),
                       ]
                     : <Widget>[
-                        FlatButton(
+                        TextButton(
                             child: Text('Continue'),
                             onPressed: () {
                               Navigator.of(context).pushNamed('/home');
@@ -51,7 +53,9 @@ class _WaitingState extends State<Waiting> {
     });
   }
 
-  Future<void> _cancelOrder() async {}
+  Future<void> _cancelOrder() async {
+    Provider.of<HiringProvider>(context,listen: false).cancelHiring();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +71,12 @@ class _WaitingState extends State<Waiting> {
                         style: TextStyle(fontSize: 14.0),
                       ),
                       actions: <Widget>[
-                        FlatButton(
+                        TextButton(
                             child: Text('No'),
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             }),
-                        FlatButton(
+                        TextButton(
                             child: Text('Yes'),
                             onPressed: () async {
                               await _cancelOrder();
@@ -118,21 +122,21 @@ class _WaitingState extends State<Waiting> {
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: FlatButton.icon(
-                    splashColor: Colors.red[100],
-                    height: 45.0,
-                    minWidth: 200.0,
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      textStyle: TextStyle(color: Colors.red),
+                      minimumSize: Size(200.0, 45.0),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          side: BorderSide(color: Colors.red)),
+                    ),
                     icon: Icon(Icons.clear),
-                    textColor: Colors.red,
-                    color: Colors.transparent,
                     onPressed: () {
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: (_) => HireFinished()));
                     },
                     label: Text('Cancel Hire'),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        side: BorderSide(color: Colors.red)),
                   ),
                 ),
               )
