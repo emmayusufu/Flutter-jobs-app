@@ -1,16 +1,8 @@
 # workmannow
 
-A new Flutter project.
+A Flutter jobs app.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project is a mainly enables different people to sign up either as workmen or clients and by doing so they are able to hire different workmen on the application as workmen or clients. Users can switch between clients and workmen.
+Workmen are able to recieve realtime notifcations with the help of firebase
